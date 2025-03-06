@@ -1,10 +1,7 @@
-version: 2.1
-
 executors:
   flyctl-executor:
     docker:
-      - image: ubuntu:20.04
-    working_directory: ~/repo
+      - image: ubuntu:20.04  # Using a basic Ubuntu image to ensure `apt-get` is available
 
 jobs:
   deploy:
@@ -12,28 +9,18 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install flyctl using curl
+          name: Install curl
           command: |
-            curl -sSL https://getfly.fly.dev/linux-x86-64/flyctl.tgz | tar xz
+            apt-get update && apt-get install curl -y  # Install curl using apt-get
       - run:
           name: Install flyctl
           command: |
-            wget -qO- 'https://getfly.fly.dev/linux-x86-64/flyctl.tgz' | tar xz
-      - run:
-          name: Authenticate with Fly.io
-          command: ./flyctl auth login --access-token $FLY_API_TOKEN
-      - run:
-          name: Build Docker image
-          command: |
-            docker build -t registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM .
-      - run:
-          name: Push Docker image to Fly.io
-          command: |
-            docker push registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM
+            curl -sSL https://getfly.fly.dev/linux-x86-64/flyctl.tgz | tar xz  # Install flyctl
       - run:
           name: Deploy to Fly.io
           command: |
-            ./flyctl deploy -i registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM -a $FLY_APP_NAME
+            flyctl auth login --access-token $FLY_API_TOKEN
+            flyctl deploy --app itinerary-hub
 
 workflows:
   version: 2
