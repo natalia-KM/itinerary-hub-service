@@ -1,0 +1,62 @@
+version: 2.1
+
+executors:
+  java-executor:
+    docker:
+      - image: cimg/openjdk:17.0
+  flyctl-executor:
+    docker:
+      - image: cimg/python:3.8
+
+jobs:
+  build:
+    executor: java-executor
+    steps:
+      - checkout
+      - run:
+          name: Grant execute permission to Gradle wrapper
+          command: chmod +x ./gradlew
+      - run:
+          name: Set up Gradle and build
+          command: ./gradlew build --no-daemon
+
+  test:
+    executor: java-executor
+    steps:
+      - checkout
+      - run:
+          name: Grant execute permission to Gradle wrapper
+          command: chmod +x ./gradlew
+      - run:
+          name: Run Tests
+          command: ./gradlew test
+
+  deploy:
+    executor: flyctl-executor
+    steps:
+      - checkout
+      - run:
+          name: Install flyctl
+          command: |
+            curl -sSL https://fly.io/install.sh | sh
+      - run:
+          name: Login to Fly.io
+          command: flyctl auth login --access-token $FLY_API_TOKEN
+      - run:
+          name: Deploy to Fly.io
+          command: flyctl deploy --app itinerary-hub
+
+workflows:
+  version: 2
+  deploy_workflow:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: main  # ✅ Runs only on merge to `main`

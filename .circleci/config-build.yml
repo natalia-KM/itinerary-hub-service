@@ -4,9 +4,6 @@ executors:
   java-executor:
     docker:
       - image: cimg/openjdk:17.0
-  flyctl-executor:
-    docker:
-      - image: cimg/python:3.8
 
 jobs:
   build:
@@ -31,40 +28,11 @@ jobs:
           name: Run Tests
           command: ./gradlew test
 
-  deploy:
-    executor: flyctl-executor
-    steps:
-      - checkout
-      - run:
-          name: Install flyctl
-          command: |
-            curl -sSL https://fly.io/install.sh | sh
-      - run:
-          name: Login to Fly.io
-          command: flyctl auth login --access-token $FLY_API_TOKEN
-      - run:
-          name: Deploy to Fly.io
-          command: flyctl deploy --app itinerary-hub
-
 workflows:
   version: 2
-
   build_and_test:
     jobs:
       - build
       - test:
           requires:
             - build
-
-  deploy_workflow:
-    jobs:
-      - build
-      - test:
-          requires:
-            - build
-      - deploy:
-          requires:
-            - test
-          filters:
-            branches:
-              only: master
