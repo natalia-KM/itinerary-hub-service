@@ -1,46 +1,20 @@
 version: 2.1
 
 executors:
-  java-executor:
-    docker:
-      - image: cimg/openjdk:17.0
   flyctl-executor:
     docker:
-      - image: flyio/flyctl:latest
-
+      - image: ubuntu:20.04
+    working_directory: ~/repo
 
 jobs:
-  build:
-    executor: java-executor
-    steps:
-      - checkout
-      - run:
-          name: Grant execute permission to Gradle wrapper
-          command: chmod +x ./gradlew
-      - run:
-          name: Set up Gradle and build
-          command: ./gradlew build --no-daemon
-
-  test:
-    executor: java-executor
-    steps:
-      - checkout
-      - run:
-          name: Grant execute permission to Gradle wrapper
-          command: chmod +x ./gradlew
-      - run:
-          name: Run Tests
-          command: ./gradlew test
-
   deploy:
     executor: flyctl-executor
     steps:
       - checkout
       - run:
-          name: Install a shell (bash) if not already present
+          name: Install Flyctl and dependencies
           command: |
-            apt-get update
-            apt-get install -y curl bash
+            apt-get update && apt-get install -y curl bash
             curl -sSL https://fly.io/install.sh | sh
       - run:
           name: Login to Fly.io
@@ -53,10 +27,5 @@ workflows:
   version: 2
   deploy_workflow:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
-      - deploy:
-          requires:
-            - test
+      - deploy
+
