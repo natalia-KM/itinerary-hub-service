@@ -9,6 +9,8 @@ COPY build.gradle settings.gradle gradlew ./
 COPY gradle gradle
 RUN ./gradlew build --no-daemon || exit 0
 
+RUN echo ${PWD} && ls -lR
+
 # Copy the application JAR file
 COPY build/libs/*.jar app.jar
 
