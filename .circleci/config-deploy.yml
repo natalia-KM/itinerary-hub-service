@@ -17,7 +17,15 @@ jobs:
             wget -qO- 'https://getfly.fly.dev/linux-x86-64/flyctl.tgz' | tar xz
       - run:
           name: Authenticate with Fly.io
-          command: flyctl auth docker --access-token $FLY_API_TOKEN
+          command: ./flyctl auth docker --access-token $FLY_API_TOKEN
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM .
+      - run:
+          name: Push Docker image to Fly.io
+          command: |
+            docker push registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM
       - run:
           name: Deploy to Fly.io
           command: |
