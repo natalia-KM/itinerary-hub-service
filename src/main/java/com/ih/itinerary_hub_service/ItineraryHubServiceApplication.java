@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ItineraryHubServiceApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(ItineraryHubServiceApplication.class, args);
 	}
 
