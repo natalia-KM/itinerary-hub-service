@@ -17,7 +17,7 @@ jobs:
             wget -qO- 'https://getfly.fly.dev/linux-x86-64/flyctl.tgz' | tar xz
       - run:
           name: Authenticate with Fly.io
-          command: ./flyctl auth docker --access-token $FLY_API_TOKEN
+          command: ./flyctl auth docker
       - run:
           name: Deploy to Fly.io
           command: |
