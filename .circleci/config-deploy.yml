@@ -12,20 +12,27 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Flyctl and dependencies
+          name: Install flyctl
           command: |
-            apt-get update && apt-get install -y curl bash
-            curl -sSL https://fly.io/install.sh | sh
+            wget -qO- 'https://getfly.fly.dev/linux-x86-64/flyctl.tgz' | tar xz
       - run:
-          name: Login to Fly.io
-          command: flyctl auth login --access-token $FLY_API_TOKEN
+          name: Authenticate with Fly.io
+          command: ./flyctl auth login --access-token $FLY_API_TOKEN
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM .
+      - run:
+          name: Push Docker image to Fly.io
+          command: |
+            docker push registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM
       - run:
           name: Deploy to Fly.io
-          command: flyctl deploy --app itinerary-hub
+          command: |
+            ./flyctl deploy -i registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM -a $FLY_APP_NAME
 
 workflows:
   version: 2
   deploy_workflow:
     jobs:
       - deploy
-
