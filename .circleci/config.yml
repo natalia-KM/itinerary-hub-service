@@ -3,10 +3,10 @@ version: 2.1
 executors:
   java-executor:
     docker:
-      - image: circleci/openjdk:17
+      - image: cimg/openjdk:17.0
   flyctl-executor:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
 
 jobs:
   build:
@@ -53,4 +53,4 @@ workflows:
             - test
           filters:
             branches:
-              only: master
+              only: main
