@@ -6,7 +6,8 @@ executors:
       - image: cimg/openjdk:17.0
   flyctl-executor:
     docker:
-      - image: cimg/python:3.8
+      - image: flyio/flyctl:latest
+
 
 jobs:
   build:
@@ -35,10 +36,6 @@ jobs:
     executor: flyctl-executor
     steps:
       - checkout
-      - run:
-          name: Install flyctl
-          command: |
-            curl -sSL https://fly.io/install.sh | sh
       - run:
           name: Login to Fly.io
           command: flyctl auth login --access-token $FLY_API_TOKEN
