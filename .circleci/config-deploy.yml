@@ -12,6 +12,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install wget
+          command: sudo apt-get update && sudo apt-get install -y wget
+      - run:
           name: Install flyctl
           command: |
             wget -qO- 'https://getfly.fly.dev/linux-x86-64/flyctl.tgz' | tar xz
