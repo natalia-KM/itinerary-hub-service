@@ -1,7 +1,10 @@
+version: 2.1
+
 executors:
   flyctl-executor:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/openjdk:17.0
+    working_directory: ~/repo
 
 jobs:
   deploy:
@@ -9,18 +12,24 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install curl
-          command: |
-            apt-get update && apt-get install curl -y
-      - run:
           name: Install flyctl
           command: |
-            curl -sSL https://getfly.fly.dev/linux-x86-64/flyctl.tgz | tar xz
+            wget -qO- 'https://getfly.fly.dev/linux-x86-64/flyctl.tgz' | tar xz
+      - run:
+          name: Authenticate with Fly.io
+          command: ./flyctl auth login --access-token $FLY_API_TOKEN
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM .
+      - run:
+          name: Push Docker image to Fly.io
+          command: |
+            docker push registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM
       - run:
           name: Deploy to Fly.io
           command: |
-            flyctl auth login --access-token $FLY_API_TOKEN
-            flyctl deploy --app itinerary-hub
+            ./flyctl deploy -i registry.fly.io/$FLY_APP_NAME:$CIRCLE_BUILD_NUM -a $FLY_APP_NAME
 
 workflows:
   version: 2
