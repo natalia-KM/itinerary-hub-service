@@ -16,6 +16,10 @@ jobs:
           command: |
             wget -qO- 'https://getfly.fly.dev/linux-x86-64/flyctl.tgz' | tar xz
       - run:
+          name: Set up Docker Buildx
+          command: |
+            curl -sSL https://github.com/docker/setup-buildx-action/releases/download/v1.0.0/setup-buildx.sh | bash
+      - run:
           name: Deploy to Fly.io
           command: |
             ./flyctl deploy --access-token "$FLY_API_TOKEN"
