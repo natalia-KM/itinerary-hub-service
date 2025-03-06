@@ -16,9 +16,6 @@ jobs:
           command: |
             wget -qO- 'https://getfly.fly.dev/linux-x86-64/flyctl.tgz' | tar xz
       - run:
-          name: Debugging the FLY_API_TOKEN
-          command: echo "$FLY_API_TOKEN"
-      - run:
           name: Deploy to Fly.io
           command: |
             ./flyctl deploy --access-token "$FLY_API_TOKEN"
