@@ -10,7 +10,7 @@ COPY gradle gradle
 RUN ./gradlew build --no-daemon || exit 0
 
 # Copy the application JAR file
-COPY build/libs/*.jar app.jar
+COPY build/libs/itinerary-hub-service-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose port 8080 (Spring Boot default)
 EXPOSE 8080
