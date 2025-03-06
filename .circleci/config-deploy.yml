@@ -1,7 +1,7 @@
 executors:
   flyctl-executor:
     docker:
-      - image: ubuntu:20.04  # Using a basic Ubuntu image to ensure `apt-get` is available
+      - image: circleci/python:3.8
 
 jobs:
   deploy:
@@ -11,11 +11,11 @@ jobs:
       - run:
           name: Install curl
           command: |
-            apt-get update && apt-get install curl -y  # Install curl using apt-get
+            apt-get update && apt-get install curl -y
       - run:
           name: Install flyctl
           command: |
-            curl -sSL https://getfly.fly.dev/linux-x86-64/flyctl.tgz | tar xz  # Install flyctl
+            curl -sSL https://getfly.fly.dev/linux-x86-64/flyctl.tgz | tar xz
       - run:
           name: Deploy to Fly.io
           command: |
