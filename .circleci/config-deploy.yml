@@ -37,6 +37,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install a shell (bash) if not already present
+          command: |
+            apt-get update && apt-get install -y bash
+      - run:
           name: Login to Fly.io
           command: flyctl auth login --access-token $FLY_API_TOKEN
       - run:
