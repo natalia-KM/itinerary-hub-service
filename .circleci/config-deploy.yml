@@ -18,7 +18,7 @@ jobs:
       - run:
           name: Deploy to Fly.io
           command: |
-            ./flyctl deploy -a $FLY_APP_NAME --access-token $FLY_API_TOKEN
+            ./flyctl deploy
 
 workflows:
   version: 2
