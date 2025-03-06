@@ -14,6 +14,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Grant execute permission to Gradle wrapper
+          command: chmod +x ./gradlew
+      - run:
           name: Set up Gradle and build
           command: ./gradlew build --no-daemon
 
@@ -21,6 +24,9 @@ jobs:
     executor: java-executor
     steps:
       - checkout
+      - run:
+          name: Grant execute permission to Gradle wrapper
+          command: chmod +x ./gradlew
       - run:
           name: Run Tests
           command: ./gradlew test
@@ -42,6 +48,14 @@ jobs:
 
 workflows:
   version: 2
+
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+
   deploy_workflow:
     jobs:
       - build
@@ -53,4 +67,4 @@ workflows:
             - test
           filters:
             branches:
-              only: main
+              only: master
