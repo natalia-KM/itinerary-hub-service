@@ -3,16 +3,19 @@ version: 2.1
 executors:
   java-executor:
     docker:
-      - image: circleci/openjdk:17
+      - image: cimg/openjdk:17.0
   flyctl-executor:
     docker:
-      - image: circleci/python:3.8
+      - image: cimg/python:3.8
 
 jobs:
   build:
     executor: java-executor
     steps:
       - checkout
+      - run:
+          name: Grant execute permission to Gradle wrapper
+          command: chmod +x ./gradlew
       - run:
           name: Set up Gradle and build
           command: ./gradlew build --no-daemon
@@ -21,6 +24,9 @@ jobs:
     executor: java-executor
     steps:
       - checkout
+      - run:
+          name: Grant execute permission to Gradle wrapper
+          command: chmod +x ./gradlew
       - run:
           name: Run Tests
           command: ./gradlew test
@@ -53,4 +59,4 @@ workflows:
             - test
           filters:
             branches:
-              only: master
+              only: main  # ✅ Runs only on merge to `main`
