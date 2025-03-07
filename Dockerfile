@@ -1,7 +1,14 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17-jdk
 
-# Copy the built jar file into the image
+WORKDIR /app
+
+# Copy Gradle files and download dependencies (use caching)
+COPY build.gradle settings.gradle gradlew ./
+COPY gradle gradle
+RUN ./gradlew build --no-daemon || exit 0
+
 COPY build/libs/*.jar app.jar
 
-# Set the entry point to run your application
-ENTRYPOINT ["java","-jar","/app.jar"]
+EXPOSE 8080
+
+CMD ["java", "-jar", "app.jar"]
