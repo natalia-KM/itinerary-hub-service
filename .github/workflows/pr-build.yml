@@ -39,6 +39,9 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Grant execute permission to Gradle
+        run: chmod +x gradlew
+
       - name: Run tests
         run: ./gradlew test
 
@@ -55,6 +58,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: Grant execute permission to Gradle
+        run: chmod +x gradlew
 
       - name: Generate test coverage report with JaCoCo
         run: ./gradlew jacocoTestReport
@@ -78,6 +84,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Grant execute permission to Gradle
+        run: chmod +x gradlew
 
       - name: Check API Docs
         run: ./gradlew checkDocs
