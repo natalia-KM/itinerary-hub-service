@@ -37,6 +37,16 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.register('installLocalGitHook', Copy) {
+	from new File(rootProject.rootDir, 'hooks')
+	into { new File(rootProject.rootDir, '.git/hooks') }
+	fileMode 0775
+}
+
+tasks.named('build') {
+	dependsOn(installLocalGitHook)
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }

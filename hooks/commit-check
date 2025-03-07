@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Check the current branch and prevent commit if on master
+branch=$(git symbolic-ref --short HEAD)
+if [ "$branch" = "master" ]; then
+  echo "Error: You are attempting to commit directly to the master branch."
+  echo "Please create a feature branch and open a pull request."
+  exit 1
+fi
