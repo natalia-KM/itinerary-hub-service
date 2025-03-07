@@ -1,5 +1,4 @@
 .*
 *.iml
-src
 build/*
 !build/docker
