@@ -1,7 +1,9 @@
 plugins {
 	id 'java'
+	id 'jacoco'
 	id 'org.springframework.boot' version '3.4.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.springdoc.openapi-gradle-plugin' version '1.9.0'
 }
 
 group = 'com.ih'
@@ -28,6 +30,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+	implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.0.2'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -51,10 +57,48 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+tasks.withType(Test).configureEach {
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+		html.required = true
+	}
+}
+
 bootJar {
 	enabled = false
 }
 
 jar {
 	enabled = true
+}
+
+openApi {
+	apiDocsUrl = "http://localhost:8080/v3/api-docs"
+	outputDir.set(file("$projectDir/docs/apis"))
+	outputFileName = "itinerary-hub-service-spec.yaml"
+	waitTimeInSeconds = 30
+	customBootRun {
+		args.set(["--spring.profiles.active=local"])
+	}
+}
+
+task checkDocs() {
+	dependsOn "generateOpenApiDocs"
+	group "openapi"
+	doLast {
+
+		def output = "git diff docs/apis/itinerary-hub-service-spec.yaml".execute(
+				[],
+				projectDir
+		).text.trim()
+
+		if(output.length() > 0) {
+			throw new GradleException("Docs need updating:\n$output\n")
+		}
+	}
 }
