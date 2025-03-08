@@ -12,7 +12,7 @@ COPY src ./src
 RUN chmod +x gradlew
 
 # Build the application
-RUN ./gradlew clean build --no-daemon
+RUN ./gradlew clean bootJar --no-daemon
 
 # Second stage: Use a smaller runtime image
 FROM eclipse-temurin:17-jdk-alpine
