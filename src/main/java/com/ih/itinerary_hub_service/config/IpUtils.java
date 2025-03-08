@@ -8,7 +8,8 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 public class IpUtils {
 
-    protected static AuthorizationManager<RequestAuthorizationContext> hasIpAddress(String ipAddress) {
+    public static AuthorizationManager<RequestAuthorizationContext> hasIpAddress(String ipAddress) {
+        System.out.println("IM HEREEEEEEEEEE");
         IpAddressMatcher ipAddressMatcher = new IpAddressMatcher(ipAddress);
         return (authentication, context) -> {
             HttpServletRequest request = context.getRequest();
