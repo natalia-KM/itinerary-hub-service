@@ -70,11 +70,11 @@ jacocoTestReport {
 }
 
 bootJar {
-	enabled = false
+	enabled = true
 }
 
 jar {
-	enabled = true
+	enabled = false
 }
 
 openApi {
