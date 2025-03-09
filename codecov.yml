@@ -5,7 +5,7 @@ coverage:
         target: 80%
         threshold: 1%
         if_ci_failed: error
-        only_pulls: true
+        only_pulls: false
 comment:
   behavior: new
   require_changes: false
