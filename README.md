@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/natalia-KM/itinerary-hub-service/branch/master/graph/badge.svg?token=OI0QDW1TXV)](https://codecov.io/gh/natalia-KM/itinerary-hub-service)
+
 # Itinerary Hub Service
 
 Service for the InineraryHub
