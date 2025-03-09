@@ -2,7 +2,7 @@
 
 # Itinerary Hub Service
 
-Service for the InineraryHub
+Service for the ItineraryHub
 
 ## Setup
 
