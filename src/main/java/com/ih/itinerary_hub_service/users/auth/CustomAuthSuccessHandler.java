@@ -42,6 +42,9 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         final String BASE_URL = clientProperties.getBaseUrl();
 
+        System.out.println("onAuthenticationSuccess start"); //TODO: remove
+        System.out.println("onAuthenticationSuccess base url: " + BASE_URL); //TODO: remove
+
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         Map<String, Object> attributes = oauthToken.getPrincipal().getAttributes();
 
@@ -51,6 +54,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
         );
 
         if (client == null || client.getAccessToken() == null) {
+            System.out.println("onAuthenticationSuccess: redirect to login, due to client being null: " + BASE_URL); //TODO: remove
             response.sendRedirect(BASE_URL + "/login");
             return;
         }
@@ -86,12 +90,15 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
                         .orElseGet(() -> userService.createGoogleUser(finalFirstName, finalLastName, googleId, googleAccessToken).getUserId());
             }
         } catch (UserAlreadyExists e) {
+            System.out.println("onAuthenticationSuccess: send error User exists: " + BASE_URL); //TODO: remove
             response.sendError(HttpServletResponse.SC_CONFLICT, e.getMessage());
             return;
         } catch (UserNotFoundException e) {
+            System.out.println("onAuthenticationSuccess: send error User not found: " + BASE_URL); //TODO: remove
             response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
             return;
         } catch (Exception e) {
+            System.out.println("onAuthenticationSuccess: send error bad request: " + BASE_URL); //TODO: remove
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             return;
         }
@@ -99,6 +106,7 @@ public class CustomAuthSuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtService.generateAccessToken(authentication.getName(), userId);
         cookieMaker.addDefaultCookies(response, userId.toString(), accessToken);
 
+        System.out.println("onAuthenticationSuccess: success and redirect: " + BASE_URL); //TODO: remove
         response.sendRedirect(BASE_URL + "/dashboard");
     }
 }

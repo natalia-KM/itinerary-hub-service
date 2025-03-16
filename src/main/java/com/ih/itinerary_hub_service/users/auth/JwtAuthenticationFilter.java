@@ -32,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/oauth2/authorization/**",
+            "/login/oauth2/code/**"
     };
 
     private static final String TOKEN_COOKIE_NAME = "access_token";
@@ -49,7 +50,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        System.out.println("doFilterInternal start"); //TODO: remove
         if (isWhitelisted(request)) {
+            System.out.println("doFilterInternal whitelisted"); //TODO: remove
             filterChain.doFilter(request, response);
             return;
         }
@@ -58,6 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String userId = jwtService.getValueFromCookies(request, USER_COOKIE_NAME);
 
         if (token == null || userId == null) {
+            System.out.println("token || userId is null"); //TODO: remove
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing authentication token or user ID");
             return;
         }
@@ -73,7 +77,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            System.out.println("doFilterInternal success"); //TODO: remove
         } catch (ExpiredJwtException e) {
+            System.out.println("doFilterInternal expired token"); //TODO: remove
             Cookie tokenCookie = CookieMaker.getCookieToRemove(TOKEN_COOKIE_NAME);
             Cookie userCookie = CookieMaker.getCookieToRemove(USER_COOKIE_NAME);
 
@@ -83,9 +90,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
             return;
         } catch (IllegalArgumentException | NullPointerException | JwtException e) {
+            System.out.println("doFilterInternal invalid token"); //TODO: remove
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
             return;
         } catch (Exception e) {
+            System.out.println("doFilterInternal exception"); //TODO: remove
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
             return;
         }
