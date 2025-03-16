@@ -110,7 +110,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .getPayload();
     }
 
-    public static boolean isWhitelisted(HttpServletRequest request) {
+    private static boolean isWhitelisted(HttpServletRequest request) {
         for(String whitelisted : WHITELIST) {
             RequestMatcher requestMatcher = new AntPathRequestMatcher(whitelisted);
             if (requestMatcher.matches(request)) {
