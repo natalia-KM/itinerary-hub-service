@@ -87,7 +87,7 @@ pg_dump -s --file=schema_backup.sql
 ## Docs
 
 ---
-If you're updating any of the enpoints, run `./gradlew generateOpenApiDocs` (service must be running)
+If you're updating any of the endpoints, run `./gradlew generateOpenApiDocs` (service must be running)
 
 The docs will be checked in CI, but if you wish to check them locally simply run `./gradlew checkDocs` (the generated docs must be committed for this to work)
 
@@ -95,3 +95,8 @@ The docs will be checked in CI, but if you wish to check them locally simply run
 
 --- 
 To test locally make sure to set secrets in properties
+
+## Deployment
+
+--- 
+Make sure any new env vars are set in Fly.io instance
