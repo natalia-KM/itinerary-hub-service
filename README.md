@@ -100,3 +100,5 @@ To test locally make sure to set secrets in properties
 
 --- 
 Make sure any new env vars are set in Fly.io instance
+
+docs: https://fly.io/docs/flyctl/
