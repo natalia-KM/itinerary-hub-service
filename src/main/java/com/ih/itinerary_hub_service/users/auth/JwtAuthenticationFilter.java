@@ -29,10 +29,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String[] WHITELIST = {
             "/v1/health",
             "/v1/users/guest",
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
             "/oauth2/authorization/**",
-            "/login/oauth2/code/**"
+            "/login/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
     };
 
     private static final String TOKEN_COOKIE_NAME = "access_token";
@@ -110,7 +110,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .getPayload();
     }
 
-    private boolean isWhitelisted(HttpServletRequest request) {
+    private static boolean isWhitelisted(HttpServletRequest request) {
         for(String whitelisted : WHITELIST) {
             RequestMatcher requestMatcher = new AntPathRequestMatcher(whitelisted);
             if (requestMatcher.matches(request)) {
