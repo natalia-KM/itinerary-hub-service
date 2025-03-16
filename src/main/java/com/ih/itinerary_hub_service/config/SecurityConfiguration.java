@@ -71,8 +71,10 @@ public class SecurityConfiguration {
                         .clearAuthentication(true)
                         .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT)))
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")))
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            System.out.println("filterChain: send error unauthorized"); //TODO: remove
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        }))
                 .httpBasic(Customizer.withDefaults())
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable);
