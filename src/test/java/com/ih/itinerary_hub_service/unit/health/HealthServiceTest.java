@@ -1,4 +1,4 @@
-package com.ih.itinerary_hub_service.unit.health.service;
+package com.ih.itinerary_hub_service.unit.health;
 
 import com.ih.itinerary_hub_service.health.service.HealthService;
 import org.junit.jupiter.api.Test;

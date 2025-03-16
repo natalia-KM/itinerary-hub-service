@@ -34,22 +34,36 @@ dependencies {
 	implementation 'org.springframework.security:spring-security-web:6.4.2'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 	implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.0.2'
+
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'
+
+	implementation 'org.springframework.boot:spring-boot-starter-validation:3.4.3'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'com.h2database:h2:2.2.220'
+
+	implementation "me.paulschwarz:spring-dotenv:4.0.0"
+
 	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework:spring-test:6.2.3'
 
 	testImplementation 'org.mockito:mockito-core:5.14.2'
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
 
-	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-	testImplementation 'org.springframework:spring-test:6.2.3'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+	testImplementation 'org.junit.platform:junit-platform-commons'
 
-	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
-	testImplementation 'org.junit.platform:junit-platform-commons:1.8.2'
+	testImplementation platform('org.junit:junit-bom:5.12.0')
 
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.8.2'
 }
