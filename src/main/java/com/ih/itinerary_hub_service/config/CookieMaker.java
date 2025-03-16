@@ -37,12 +37,13 @@ public class CookieMaker {
 
     public Cookie makeCookie(String cookieName, String cookieValue) {
         boolean isEnabled = cookieProperties.isEnabled();
+        String sameSite = isEnabled ? "None" : "Lax";
 
         Cookie accessTokenCookie = new Cookie(cookieName, cookieValue);
         accessTokenCookie.setHttpOnly(true);
         accessTokenCookie.setSecure(isEnabled);
         accessTokenCookie.setPath("/");
-        accessTokenCookie.setAttribute("SameSite", "Lax");
+        accessTokenCookie.setAttribute("SameSite", sameSite);
 
         return accessTokenCookie;
     }
