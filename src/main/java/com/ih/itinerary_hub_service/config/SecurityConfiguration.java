@@ -73,7 +73,8 @@ public class SecurityConfiguration {
                         .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT)))
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
-                            System.out.println("filterChain: send error unauthorized"); //TODO: remove
+                            System.out.println("AuthenticationEntryPoint called for: " + request.getRequestURI());
+                            System.out.println("filterChain: send error unauthorized: " + authException.getMessage()); //TODO: remove
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                         }))
                 .httpBasic(Customizer.withDefaults())
