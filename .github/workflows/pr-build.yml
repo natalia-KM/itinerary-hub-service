@@ -89,4 +89,6 @@ jobs:
         run: chmod +x gradlew
 
       - name: Check API Docs
-        run: ./gradlew checkDocs -Dspring.profiles.active=test
+        env:
+          SPRING_PROFILES_ACTIVE: test
+        run: ./gradlew checkDocs --no-daemon
