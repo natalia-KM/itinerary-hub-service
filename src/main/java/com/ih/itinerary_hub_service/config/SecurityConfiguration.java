@@ -29,14 +29,16 @@ public class SecurityConfiguration {
     private final CustomAuthSuccessHandler customAuthenticationSuccessHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ClientProperties clientProperties;
+    private final CookieMaker cookieMaker;
 
     public SecurityConfiguration(
             CustomAuthSuccessHandler customAuthenticationSuccessHandler,
-            JwtAuthenticationFilter jwtAuthenticationFilter, ClientProperties clientProperties
+            JwtAuthenticationFilter jwtAuthenticationFilter, ClientProperties clientProperties, CookieMaker cookieMaker
     ) {
         this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.clientProperties = clientProperties;
+        this.cookieMaker = cookieMaker;
     }
 
     private final String[] AUTH_WHITELIST = {
@@ -70,7 +72,10 @@ public class SecurityConfiguration {
                         .deleteCookies("access_token", "user_id")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT)))
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            cookieMaker.removeDefaultCookies(response);
+                            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                        }))
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
                             System.out.println("AuthenticationEntryPoint called for: " + request.getRequestURI());

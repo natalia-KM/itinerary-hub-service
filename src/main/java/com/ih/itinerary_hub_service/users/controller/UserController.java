@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.ih.itinerary_hub_service.config.CookieMaker.removeDefaultCookies;
-
 @RestController
 @RequestMapping(value = "/v1")
 public class UserController {
@@ -85,7 +83,7 @@ public class UserController {
     @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "User deleted")})
     public void deleteUser(@RequestAttribute("userId") UUID userId, HttpServletResponse response) {
         userService.deleteUser(userId);
-        removeDefaultCookies(response);
+        cookieMaker.removeDefaultCookies(response);
     }
 }
 

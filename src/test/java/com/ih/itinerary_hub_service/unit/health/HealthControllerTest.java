@@ -1,8 +1,10 @@
 package com.ih.itinerary_hub_service.unit.health;
 
 
+import com.ih.itinerary_hub_service.config.CookieMaker;
 import com.ih.itinerary_hub_service.health.controller.HealthController;
 import com.ih.itinerary_hub_service.health.service.HealthService;
+import com.ih.itinerary_hub_service.users.auth.JwtAuthenticationFilter;
 import com.ih.itinerary_hub_service.users.auth.JwtService;
 import com.ih.itinerary_hub_service.users.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,9 @@ class HealthControllerTest {
 
     @MockitoBean
     private UserService userService; // required for context
+
+    @MockitoBean
+    private CookieMaker cookieMaker;
 
     @Test
     void health_whenServiceIsOk_thenReturn200() throws Exception {
