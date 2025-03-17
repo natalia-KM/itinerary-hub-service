@@ -31,7 +31,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/v1/users/guest",
             "/oauth2/authorization/**",
             "/v3/api-docs/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
+            "/login/oauth2/code/**"
     };
 
     private static final String TOKEN_COOKIE_NAME = "access_token";
@@ -51,12 +52,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        System.out.println("doFilterInternal start"); //TODO: remove
+        System.out.println("doFilterInternal start for: " + request.getRequestURI()); //TODO: remove
         if (isWhitelisted(request)) {
             System.out.println("doFilterInternal whitelisted"); //TODO: remove
             filterChain.doFilter(request, response);
             return;
         }
+
+        System.out.println("doFilterInternal NOT whitelisted"); //TODO: remove
 
         String token = jwtService.getValueFromCookies(request, TOKEN_COOKIE_NAME);
         String userId = jwtService.getValueFromCookies(request, USER_COOKIE_NAME);
