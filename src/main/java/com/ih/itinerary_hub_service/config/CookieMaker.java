@@ -27,9 +27,9 @@ public class CookieMaker {
         response.addCookie(userIdCookie);
     }
 
-    public static void removeDefaultCookies(HttpServletResponse response) {
-        Cookie tokenCookie = CookieMaker.getCookieToRemove(TOKEN_COOKIE_NAME);
-        Cookie userCookie = CookieMaker.getCookieToRemove(USER_COOKIE_NAME);
+    public void removeDefaultCookies(HttpServletResponse response) {
+        Cookie tokenCookie = getCookieToRemove(TOKEN_COOKIE_NAME);
+        Cookie userCookie = getCookieToRemove(USER_COOKIE_NAME);
 
         response.addCookie(tokenCookie);
         response.addCookie(userCookie);
@@ -49,10 +49,17 @@ public class CookieMaker {
         return accessTokenCookie;
     }
 
-    public static Cookie getCookieToRemove(String cookieName) {
+    public Cookie getCookieToRemove(String cookieName) {
+        boolean isEnabled = cookieProperties.isEnabled();
+
+        String sameSite = isEnabled ? "None" : "Lax";
+
         Cookie cookie = new Cookie(cookieName, "");
         cookie.setMaxAge(0);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", sameSite);
         return cookie;
     }
 }

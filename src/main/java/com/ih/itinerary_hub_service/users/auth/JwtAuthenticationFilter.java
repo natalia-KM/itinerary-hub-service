@@ -38,11 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String USER_COOKIE_NAME = "user_id";
     private final JwtService jwtService;
     private final UserService userService;
+    private final CookieMaker cookieMaker;
 
     @Autowired
-    public JwtAuthenticationFilter(JwtService jwtService, UserService userService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserService userService, CookieMaker cookieMaker) {
         this.jwtService = jwtService;
         this.userService = userService;
+        this.cookieMaker = cookieMaker;
     }
 
     @Override
@@ -80,12 +82,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             System.out.println("doFilterInternal success"); //TODO: remove
         } catch (ExpiredJwtException e) {
             System.out.println("doFilterInternal expired token"); //TODO: remove
-            Cookie tokenCookie = CookieMaker.getCookieToRemove(TOKEN_COOKIE_NAME);
-            Cookie userCookie = CookieMaker.getCookieToRemove(USER_COOKIE_NAME);
 
-            response.addCookie(tokenCookie);
-            response.addCookie(userCookie);
-
+            cookieMaker.removeDefaultCookies(response);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
             return;
         } catch (IllegalArgumentException | NullPointerException | JwtException e) {
