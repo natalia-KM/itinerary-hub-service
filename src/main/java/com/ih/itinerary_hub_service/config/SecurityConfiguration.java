@@ -81,7 +81,7 @@ public class SecurityConfiguration {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
                             log.error("Authentication failed for request : {}, message: {} ", request.getRequestURI(), authException.getMessage());
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
                         }))
                 .httpBasic(Customizer.withDefaults())
                 .cors(Customizer.withDefaults())

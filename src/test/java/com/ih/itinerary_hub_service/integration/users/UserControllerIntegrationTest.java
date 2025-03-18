@@ -15,6 +15,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -76,7 +78,11 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
                             .cookie(nonExistingUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound())
-                    .andExpect(status().reason("User not found"));
+                    .andExpect(result -> {
+                        String reason = result.getResponse().getErrorMessage();
+                        assertNotNull(reason);
+                        assertTrue(reason.contains("User not found"), "Reason should contain 'User not found'");
+                    });
         }
 
     }
@@ -140,7 +146,11 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
                             .cookie(nonExistingUserIdCookie)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isNotFound())
-                    .andExpect(status().reason("User not found"));
+                    .andExpect(result -> {
+                        String reason = result.getResponse().getErrorMessage();
+                        assertNotNull(reason);
+                        assertTrue(reason.contains("User not found"), "Reason should contain 'User not found'");
+                    });
         }
 
         @Test
@@ -188,7 +198,11 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
                             .cookie(nonExistingUserAccessTokenCookie)
                             .cookie(nonExistingUserIdCookie))
                     .andExpect(status().isNotFound())
-                    .andExpect(status().reason("User not found"));
+                    .andExpect(result -> {
+                        String reason = result.getResponse().getErrorMessage();
+                        assertNotNull(reason);
+                        assertTrue(reason.contains("User not found"), "Reason should contain 'User not found'");
+                    });
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.ih.itinerary_hub_service.users.auth;
 
 import com.ih.itinerary_hub_service.config.CookieMaker;
+import com.ih.itinerary_hub_service.users.exceptions.UserNotFoundException;
 import com.ih.itinerary_hub_service.users.persistence.entity.User;
 import com.ih.itinerary_hub_service.users.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -87,6 +88,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (IllegalArgumentException | NullPointerException | JwtException e) {
             log.error("Token is invalid, {}", request.getRequestURI());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+            return;
+        } catch (UserNotFoundException e) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
             return;
         } catch (Exception e) {
             log.error("Failed to authorize, {}", e.getMessage());
