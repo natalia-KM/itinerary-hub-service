@@ -8,9 +8,9 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String[] WHITELIST = {
@@ -51,9 +52,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        System.out.println("doFilterInternal start"); //TODO: remove
         if (isWhitelisted(request)) {
-            System.out.println("doFilterInternal whitelisted"); //TODO: remove
+            log.info("Request is whitelisted, {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -62,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String userId = jwtService.getValueFromCookies(request, USER_COOKIE_NAME);
 
         if (token == null || userId == null) {
-            System.out.println("token || userId is null"); //TODO: remove
+            log.error("Request failed. Missing authentication token or user ID, {}", request.getRequestURI());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing authentication token or user ID");
             return;
         }
@@ -78,21 +78,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            System.out.println("doFilterInternal success"); //TODO: remove
         } catch (ExpiredJwtException e) {
-            System.out.println("doFilterInternal expired token"); //TODO: remove
-
+            log.error("Token has expired, {}", request.getRequestURI());
             cookieMaker.removeDefaultCookies(response);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
             return;
         } catch (IllegalArgumentException | NullPointerException | JwtException e) {
-            System.out.println("doFilterInternal invalid token"); //TODO: remove
+            log.error("Token is invalid, {}", request.getRequestURI());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
             return;
         } catch (Exception e) {
-            System.out.println("doFilterInternal exception"); //TODO: remove
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+            log.error("Failed to authorize, {}", e.getMessage());
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Failed to authorize");
             return;
         }
 

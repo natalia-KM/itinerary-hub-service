@@ -5,6 +5,7 @@ import com.ih.itinerary_hub_service.users.auth.CustomAuthSuccessHandler;
 import com.ih.itinerary_hub_service.users.auth.JwtAuthenticationFilter;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfiguration {
     private final CustomAuthSuccessHandler customAuthenticationSuccessHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -78,8 +80,7 @@ public class SecurityConfiguration {
                         }))
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
-                            System.out.println("AuthenticationEntryPoint called for: " + request.getRequestURI());
-                            System.out.println("filterChain: send error unauthorized: " + authException.getMessage()); //TODO: remove
+                            log.error("Authentication failed for request : {}, message: {} ", request.getRequestURI(), authException.getMessage());
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                         }))
                 .httpBasic(Customizer.withDefaults())
