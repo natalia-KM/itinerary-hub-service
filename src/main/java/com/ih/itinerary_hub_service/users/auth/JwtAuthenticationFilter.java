@@ -32,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/v1/users/guest",
             "/oauth2/authorization/**",
             "/v3/api-docs/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
+            "/login/oauth2/code/**"
     };
 
     private static final String TOKEN_COOKIE_NAME = "access_token";
