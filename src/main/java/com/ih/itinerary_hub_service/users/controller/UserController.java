@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/v1")
+@Slf4j
 public class UserController {
 
     private static final String RESTRICTED_PATH = "/users";
@@ -43,6 +45,7 @@ public class UserController {
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Guest user created")})
     public void createUser(@Valid @RequestBody UserDetailsRequest request, HttpServletResponse response) {
         User user = userService.createGuestUser(request.firstName(), request.lastName());
+        log.info("Guest user created: {}", user);
 
         UUID uuid = UUID.randomUUID();
         String accessToken = jwtService.generateAccessToken("guest-user-" + uuid, user.getUserId());

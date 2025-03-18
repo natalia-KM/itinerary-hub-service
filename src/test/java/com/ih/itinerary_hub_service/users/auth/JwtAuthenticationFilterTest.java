@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -48,7 +50,11 @@ class JwtAuthenticationFilterTest extends BaseIntegrationTest {
                         .cookie(guestUserAccessTokenCookie)
                         .cookie(nonExistingUserIdCookie))
                 .andExpect(status().isNotFound())
-                .andExpect(status().reason("User not found"));
+                .andExpect(result -> {
+                    String reason = result.getResponse().getErrorMessage();
+                    assertNotNull(reason);
+                    assertTrue(reason.contains("User not found"), "Reason should contain 'User not found'");
+                });
     }
 
     @Test

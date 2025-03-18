@@ -18,6 +18,12 @@ Service for the ItineraryHub
 ./gradlew bootRun
 ```
 
+> [!IMPORTANT]
+> For some of the functionalities you will need Database setup and modified security config. 
+
+- Add your path to ```SecurityConfiguration``` CORS.
+- Db info below
+
 ## Database
 
 ---
