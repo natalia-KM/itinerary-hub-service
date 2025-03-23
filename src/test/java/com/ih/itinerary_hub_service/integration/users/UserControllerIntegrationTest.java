@@ -13,13 +13,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 public class UserControllerIntegrationTest extends BaseIntegrationTest {
 
@@ -95,8 +96,11 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         String newCurrency = "USD";
 
         UpdateUserDetailsRequest request =
-                new UpdateUserDetailsRequest(newFirstName, newLastName, newCurrency);
-
+                new UpdateUserDetailsRequest(
+                        Optional.of(newFirstName),
+                        Optional.of(newLastName),
+                        Optional.of(newCurrency)
+                );
         @Test
         void updateGuestUserDetails_whenValidRequest_returnOK() throws Exception {
             String expectedJsonResponse = """
@@ -120,7 +124,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         @Test
         void updateGoogleUserDetails_whenValidRequest_returnOK() throws Exception {
             UpdateUserDetailsRequest requestNewName =
-                    new UpdateUserDetailsRequest(newFirstName, "", "");
+                    new UpdateUserDetailsRequest(Optional.ofNullable(newFirstName), Optional.of(""), Optional.of(""));
 
             String expectedJsonResponse = """
                         {
@@ -164,7 +168,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
                     """;
 
             UpdateUserDetailsRequest emptyRequest =
-                    new UpdateUserDetailsRequest("", "", "");
+                    new UpdateUserDetailsRequest(Optional.of(""), Optional.of(""), Optional.of(""));
 
             mockMvc.perform(MockMvcRequestBuilders.put("/v1/users")
                             .contentType(MediaType.APPLICATION_JSON)

@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.containsString;
@@ -168,7 +169,11 @@ class UserControllerTest {
         String newCurrency = "USD";
 
         UpdateUserDetailsRequest request =
-                new UpdateUserDetailsRequest(newFirstName, newLastName, newCurrency);
+                new UpdateUserDetailsRequest(
+                        Optional.of(newFirstName),
+                        Optional.of(newLastName),
+                        Optional.of(newCurrency)
+                );
 
         User updatedUser = new User(
                 uuidForUser,
@@ -193,7 +198,7 @@ class UserControllerTest {
                         }
                     """.formatted(newFirstName, newLastName, newCurrency);
 
-            when(userService.updateUserDetails(uuidForUser, newFirstName, newLastName, newCurrency)).thenReturn(updatedUser);
+            when(userService.updateUserDetails(uuidForUser, request)).thenReturn(updatedUser);
 
             mockMvc.perform(MockMvcRequestBuilders.put("/v1/users")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -202,12 +207,12 @@ class UserControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(MockMvcResultMatchers.content().json(expectedJsonResponse));
 
-            verify(userService, times(1)).updateUserDetails(uuidForUser, newFirstName, newLastName, newCurrency);
+            verify(userService, times(1)).updateUserDetails(uuidForUser, request);
         }
 
         @Test
         void updateUserDetails_whenUserNotFound_return404() throws Exception {
-            when(userService.updateUserDetails(uuidForUser, newFirstName, newLastName, newCurrency)).thenThrow(new UserNotFoundException("User not found"));
+            when(userService.updateUserDetails(uuidForUser, request)).thenThrow(new UserNotFoundException("User not found"));
 
             mockMvc.perform(MockMvcRequestBuilders.put("/v1/users")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -216,12 +221,12 @@ class UserControllerTest {
                     .andExpect(status().isNotFound())
                     .andExpect(MockMvcResultMatchers.content().string("User not found"));
 
-            verify(userService, times(1)).updateUserDetails(uuidForUser, newFirstName, newLastName, newCurrency);
+            verify(userService, times(1)).updateUserDetails(uuidForUser, request);
         }
 
         @Test
         void updateUserDetails_whenDbFails_return500() throws Exception {
-            when(userService.updateUserDetails(uuidForUser, newFirstName, newLastName, newCurrency)).thenThrow(new RuntimeException("Couldn't update user"));
+            when(userService.updateUserDetails(uuidForUser, request)).thenThrow(new RuntimeException("Couldn't update user"));
 
             mockMvc.perform(MockMvcRequestBuilders.put("/v1/users")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -229,7 +234,7 @@ class UserControllerTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isInternalServerError());
 
-            verify(userService, times(1)).updateUserDetails(uuidForUser, newFirstName, newLastName, newCurrency);
+            verify(userService, times(1)).updateUserDetails(uuidForUser, request);
         }
     }
 

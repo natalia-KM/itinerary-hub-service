@@ -1,10 +1,10 @@
 package com.ih.itinerary_hub_service.users.requests;
 
-import jakarta.annotation.Nullable;
+import java.util.Optional;
 
 public record UpdateUserDetailsRequest(
-         String firstName,
-         String lastName,
-         @Nullable String currency
+        Optional<String> firstName,
+        Optional<String> lastName,
+        Optional<String> currency
 ) {
 }

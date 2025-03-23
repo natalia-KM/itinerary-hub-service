@@ -4,6 +4,7 @@ import com.ih.itinerary_hub_service.users.exceptions.UserAlreadyExists;
 import com.ih.itinerary_hub_service.users.exceptions.UserNotFoundException;
 import com.ih.itinerary_hub_service.users.persistence.entity.User;
 import com.ih.itinerary_hub_service.users.persistence.repository.UserRepository;
+import com.ih.itinerary_hub_service.users.requests.UpdateUserDetailsRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -68,12 +69,20 @@ public class UserService {
         return userRepository.findUserByGoogleId(googleId);
     }
 
-    public User updateUserDetails(UUID userId, String firstName, String lastName, String currency) {
+    public User updateUserDetails(UUID userId, UpdateUserDetailsRequest request) {
         User existingUser = getUserById(userId);
 
-        if(firstName != null && !firstName.isEmpty()) existingUser.setFirstName(firstName);
-        if(lastName != null && !lastName.isEmpty()) existingUser.setLastName(lastName);
-        if(currency != null && !currency.isEmpty()) existingUser.setCurrency(currency);
+        request.firstName()
+                .filter(name -> !name.isBlank())
+                .ifPresent(existingUser::setFirstName);
+
+        request.lastName()
+                .filter(name -> !name.isBlank())
+                .ifPresent(existingUser::setLastName);
+
+        request.currency()
+                .filter(name -> !name.isBlank())
+                .ifPresent(existingUser::setCurrency);
 
         try {
             userRepository.save(existingUser);

@@ -103,6 +103,124 @@
         }
       }
     },
+    "/v1/trips/{tripId}": {
+      "get": {
+        "tags": [
+          "trips-controller"
+        ],
+        "summary": "Get Trip by ID",
+        "operationId": "getTripById",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Trip retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "trips-controller"
+        ],
+        "summary": "Update Trip",
+        "operationId": "updateTrip",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTripRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Trip updated"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "trips-controller"
+        ],
+        "summary": "Delete Trip",
+        "operationId": "deleteTrip",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Trip deleted"
+          }
+        }
+      }
+    },
     "/v1/users/guest": {
       "post": {
         "tags": [
@@ -133,6 +251,75 @@
           },
           "201": {
             "description": "Guest user created"
+          }
+        }
+      }
+    },
+    "/v1/trips": {
+      "get": {
+        "tags": [
+          "trips-controller"
+        ],
+        "summary": "Get all trips in account",
+        "operationId": "getTrips",
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "All trips retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TripDetails"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "trips-controller"
+        ],
+        "summary": "Create Trip",
+        "operationId": "createTrip",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTripRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Trip created"
+          },
+          "201": {
+            "description": "Created"
           }
         }
       }
@@ -203,6 +390,25 @@
           }
         }
       },
+      "UpdateTripRequest": {
+        "type": "object",
+        "properties": {
+          "tripName": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "imageRef": {
+            "type": "string"
+          }
+        }
+      },
       "UserDetailsRequest": {
         "type": "object",
         "properties": {
@@ -217,6 +423,55 @@
           "firstName",
           "lastName"
         ]
+      },
+      "CreateTripRequest": {
+        "type": "object",
+        "properties": {
+          "tripName": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "imageRef": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "tripName"
+        ]
+      },
+      "TripDetails": {
+        "type": "object",
+        "properties": {
+          "tripId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tripName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "imageRef": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
       }
     }
   }
