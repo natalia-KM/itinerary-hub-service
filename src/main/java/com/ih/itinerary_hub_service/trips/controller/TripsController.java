@@ -35,7 +35,6 @@ public class TripsController {
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "All trips retrieved")})
     public List<TripDetails> getTrips(@RequestAttribute("userId") UUID userId) {
         return tripsService.getTrips(userId);
-
     }
 
     @PostMapping(TRIPS_PATH)
