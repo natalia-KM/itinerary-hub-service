@@ -1,4 +1,4 @@
-package com.ih.itinerary_hub_service.users.auth;
+package com.ih.itinerary_hub_service.unit.users;
 
 import com.ih.itinerary_hub_service.integration.BaseIntegrationTest;
 import org.junit.jupiter.api.Test;

@@ -70,7 +70,7 @@ public class UserController {
     @Operation(summary = "${users.updateUserDetails.summary}")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "User details updated")})
     public GetUserDetailsResponse updateUserDetails(@RequestAttribute("userId") UUID userId, @RequestBody UpdateUserDetailsRequest request) {
-        User user = userService.updateUserDetails(userId, request.firstName(), request.lastName(), request.currency());
+        User user = userService.updateUserDetails(userId, request);
 
         return new GetUserDetailsResponse(
                 user.getFirstName(),
@@ -89,5 +89,3 @@ public class UserController {
         cookieMaker.removeDefaultCookies(response);
     }
 }
-
-

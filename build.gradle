@@ -117,7 +117,7 @@ openApi {
 	outputFileName = "itinerary-hub-service-spec.yaml"
 	waitTimeInSeconds = 30
 	customBootRun {
-		args.set(["--spring.profiles.active=test"])
+		args.set(["--spring.profiles.active=local"])
 	}
 }
 

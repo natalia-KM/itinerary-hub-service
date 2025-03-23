@@ -1,8 +1,10 @@
-package com.ih.itinerary_hub_service.users.service;
+package com.ih.itinerary_hub_service.unit.users;
 
 import com.ih.itinerary_hub_service.users.exceptions.UserNotFoundException;
 import com.ih.itinerary_hub_service.users.persistence.entity.User;
 import com.ih.itinerary_hub_service.users.persistence.repository.UserRepository;
+import com.ih.itinerary_hub_service.users.requests.UpdateUserDetailsRequest;
+import com.ih.itinerary_hub_service.users.service.UserService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -101,7 +103,11 @@ class UserServiceTest {
         void updateUser_shouldUpdateUser_whenUserExists() {
             when(userRepository.findById(any())).thenReturn(Optional.of(mockUser));
 
-            User user = userService.updateUserDetails(uuidForUser, "firstName", "", "GBP");
+            UpdateUserDetailsRequest updateUserDetailsRequest = new UpdateUserDetailsRequest(
+                    Optional.of("firstName"), Optional.of(""), Optional.of("GBP")
+            );
+
+            User user = userService.updateUserDetails(uuidForUser, updateUserDetailsRequest);
             assertNotNull(user);
             assertEquals("firstName", user.getFirstName());
             assertEquals("GBP", user.getCurrency());
@@ -110,17 +116,25 @@ class UserServiceTest {
 
         @Test
         void updateUser_shouldThrowUserNotFoundException_whenUserDoesNotExist() {
+            UpdateUserDetailsRequest updateUserDetailsRequest = new UpdateUserDetailsRequest(
+                    Optional.of("firstName"), Optional.of(""), Optional.of("GBP")
+            );
+
             when(userRepository.findById(any())).thenReturn(Optional.empty());
 
-            assertThrows(UserNotFoundException.class, () -> userService.updateUserDetails(uuidForUser, "firstName", "lastName", "GBP"));
+            assertThrows(UserNotFoundException.class, () -> userService.updateUserDetails(uuidForUser, updateUserDetailsRequest));
         }
 
         @Test
         void updateUser_shouldThrowRuntimeException_whenDbFails() {
+            UpdateUserDetailsRequest updateUserDetailsRequest = new UpdateUserDetailsRequest(
+                    Optional.of("firstName"), Optional.of(""), Optional.of("GBP")
+            );
+
             when(userRepository.findById(any())).thenReturn(Optional.of(mockUser));
             when(userRepository.save(any())).thenThrow(new IllegalArgumentException("Failed to save user to the database"));
 
-            assertThrows(RuntimeException.class, () -> userService.updateUserDetails(uuidForUser, "firstName", "", "GBP"));
+            assertThrows(RuntimeException.class, () -> userService.updateUserDetails(uuidForUser, updateUserDetailsRequest));
         }
     }
 

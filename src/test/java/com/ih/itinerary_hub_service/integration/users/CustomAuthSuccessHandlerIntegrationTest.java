@@ -1,6 +1,8 @@
-package com.ih.itinerary_hub_service.users.auth;
+package com.ih.itinerary_hub_service.integration.users;
 
 import com.ih.itinerary_hub_service.integration.BaseIntegrationTest;
+import com.ih.itinerary_hub_service.users.auth.CustomAuthSuccessHandler;
+import com.ih.itinerary_hub_service.users.auth.JwtService;
 import com.ih.itinerary_hub_service.users.exceptions.UserAlreadyExists;
 import com.ih.itinerary_hub_service.users.exceptions.UserNotFoundException;
 import com.ih.itinerary_hub_service.users.persistence.entity.User;
@@ -20,7 +22,6 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;

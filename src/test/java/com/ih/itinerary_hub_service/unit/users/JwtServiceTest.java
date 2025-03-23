@@ -1,5 +1,6 @@
-package com.ih.itinerary_hub_service.users.auth;
+package com.ih.itinerary_hub_service.unit.users;
 
+import com.ih.itinerary_hub_service.users.auth.JwtService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
