@@ -146,5 +146,4 @@ class TripsControllerTest {
             verify(tripsService, times(1)).deleteTrip(uuidForUser, tripId);
         }
     }
-
 }

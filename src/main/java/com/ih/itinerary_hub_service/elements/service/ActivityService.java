@@ -1,0 +1,86 @@
+package com.ih.itinerary_hub_service.elements.service;
+
+import com.ih.itinerary_hub_service.elements.exceptions.ElementDoesNotExist;
+import com.ih.itinerary_hub_service.elements.model.ActivityElementDetails;
+import com.ih.itinerary_hub_service.elements.persistence.entity.ActivityElement;
+import com.ih.itinerary_hub_service.elements.persistence.entity.BaseElement;
+import com.ih.itinerary_hub_service.elements.persistence.repository.ActivityRepository;
+import com.ih.itinerary_hub_service.elements.requests.ActivityElementRequest;
+import com.ih.itinerary_hub_service.exceptions.DbFailure;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Service
+@Slf4j
+public class ActivityService {
+
+    private final ActivityRepository activityRepository;
+
+    public ActivityService(ActivityRepository activityRepository) {
+        this.activityRepository = activityRepository;
+    }
+
+    public ActivityElementDetails createElement(ActivityElementRequest request, BaseElement baseElement) {
+        UUID elementId = UUID.randomUUID();
+
+        ActivityElement activityElement = new ActivityElement(
+                elementId,
+                baseElement,
+                request.getActivityName(),
+                request.getLocation(),
+                request.getStartsAt(),
+                request.getDuration(),
+                request.getOrder()
+        );
+
+        try {
+            activityRepository.save(activityElement);
+            log.info("Created element with id {}", elementId);
+            return mapElementDetails(baseElement, activityElement);
+        } catch (Exception e) {
+            log.error("Failed to save activity element, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
+    public ActivityElement getElementById(UUID baseElementID) {
+        return activityRepository.getActivityElementByBaseId(baseElementID)
+                .orElseThrow(() -> {
+                    log.error("Couldn't find an element with base ID: {}", baseElementID);
+                    return new ElementDoesNotExist("Couldn't find an element with base ID: " + baseElementID);
+                });
+    }
+
+    public ActivityElementDetails mapElementDetails(BaseElement baseElement, ActivityElement element) {
+        ActivityElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, element.getElementOrder());
+
+        return baseElementBuild
+                .activityName(element.getActivityName())
+                .location(element.getLocation())
+                .startsAt(element.getStartsAt())
+                .duration(element.getDuration())
+                .build();
+    }
+
+
+    public ActivityElementDetails getElementDetailsByID(BaseElement baseElement) {
+        ActivityElement element = getElementById(baseElement.getBaseElementId());
+
+        return mapElementDetails(baseElement, element);
+    }
+
+    private static ActivityElementDetails.Builder getBaseElementBuild(BaseElement baseElement, Integer order) {
+        return new ActivityElementDetails.Builder()
+                .baseElementID(baseElement.getBaseElementId())
+                .optionID(baseElement.getOption().getOptionId())
+                .lastUpdatedAt(baseElement.getLastUpdatedAt())
+                .elementType(baseElement.getElementType())
+                .link(baseElement.getLink())
+                .price(baseElement.getPrice())
+                .notes(baseElement.getNotes())
+                .status(baseElement.getStatus())
+                .order(order);
+    }
+}

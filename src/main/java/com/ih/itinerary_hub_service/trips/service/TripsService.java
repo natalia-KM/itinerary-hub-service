@@ -1,7 +1,10 @@
 package com.ih.itinerary_hub_service.trips.service;
 
+import com.ih.itinerary_hub_service.dto.SectionDTO;
+import com.ih.itinerary_hub_service.dto.TripDTO;
+import com.ih.itinerary_hub_service.exceptions.DbFailure;
+import com.ih.itinerary_hub_service.sections.service.SectionService;
 import com.ih.itinerary_hub_service.trips.exceptions.TripNotFound;
-import com.ih.itinerary_hub_service.trips.exceptions.TripsDbFailure;
 import com.ih.itinerary_hub_service.trips.persistence.entity.Trip;
 import com.ih.itinerary_hub_service.trips.persistence.repository.TripsRepository;
 import com.ih.itinerary_hub_service.trips.requests.CreateTripRequest;
@@ -24,10 +27,12 @@ public class TripsService {
 
     private final TripsRepository tripsRepository;
     private final UserRepository userRepository;
+    private final SectionService sectionService;
 
-    public TripsService(TripsRepository tripsRepository, UserRepository userRepository) {
+    public TripsService(TripsRepository tripsRepository, UserRepository userRepository, SectionService sectionService) {
         this.tripsRepository = tripsRepository;
         this.userRepository = userRepository;
+        this.sectionService = sectionService;
     }
 
     public List<TripDetails> getTrips(UUID userId) {
@@ -47,24 +52,6 @@ public class TripsService {
         });
 
         return tripDetailsList;
-    }
-
-    // TODO: modify once everything is setup in DB
-    public TripDetails getTripById(UUID userId, UUID tripId) {
-        Trip trip = tripsRepository.findByTripIdAndUserId(tripId, userId)
-                .orElseThrow(() -> {
-                    log.error("Trip not found with ID: {} and userId: {}", tripId, userId);
-                     return new TripNotFound("Trip not found");
-                });
-
-        return new TripDetails(
-                trip.getTripId(),
-                trip.getTripName(),
-                trip.getCreatedAt(),
-                trip.getImageRef(),
-                trip.getStartDate(),
-                trip.getEndDate()
-        );
     }
 
     public void createTrip(UUID userId, CreateTripRequest request) {
@@ -95,16 +82,12 @@ public class TripsService {
             log.info("Trip created: {}", tripId);
         } catch (Exception e) {
             log.error("Failed to create a trip: {}", e.getMessage());
-            throw new TripsDbFailure("Failed to update trip details");
+            throw new DbFailure("Failed to create a trip");
         }
     }
 
     public void updateTrip(UUID userId, UUID tripId, UpdateTripRequest request) {
-        Trip existingTrip = tripsRepository.findByTripIdAndUserId(tripId, userId)
-                .orElseThrow(() -> {
-                    log.error("Trip not found with ID: {} and userId: {}", tripId, userId);
-                    return new TripNotFound("Trip not found");
-                });
+        Trip existingTrip = getTrip(userId, tripId);
 
         request.tripName()
                 .filter(name -> !name.isBlank())
@@ -122,24 +105,52 @@ public class TripsService {
             log.info("Trip details updated for trip ID: {}", existingTrip.getTripId());
         } catch (Exception e) {
             log.error("Failed to update trip details: {}", e.getMessage());
-            throw new TripsDbFailure("Failed to update trip details");
+            throw new DbFailure("Failed to update trip details");
         }
     }
 
     public void deleteTrip(UUID userId, UUID tripId) {
         // to make sure the user owns the trip
-        Trip existingTrip = tripsRepository.findByTripIdAndUserId(tripId, userId)
+        Trip existingTrip = getTrip(userId, tripId);
+
+        try {
+            tripsRepository.deleteTripById(existingTrip.getTripId());
+            log.info("Trip deleted, ID: {}", existingTrip.getTripId());
+        } catch (Exception e) {
+            log.error("Failed to delete the trip: {}", e.getMessage());
+            throw new DbFailure("Failed to delete the trip");
+        }
+    }
+
+    public Trip getTrip(UUID userId, UUID tripId) {
+        return tripsRepository.findByTripIdAndUserId(tripId, userId)
                 .orElseThrow(() -> {
                     log.error("Trip not found with ID: {} and userId: {}", tripId, userId);
                     return new TripNotFound("Trip not found");
                 });
-
-        try {
-            tripsRepository.deleteById(existingTrip.getTripId());
-            log.info("Trip deleted, ID: {}", existingTrip.getTripId());
-        } catch (Exception e) {
-            log.error("Failed to delete the trip: {}", e.getMessage());
-            throw new TripsDbFailure("Failed to delete the trip");
-        }
     }
+
+    public TripDTO traverseTrip(UUID userId, UUID tripId) {
+        TripDetails existingTrip = getTripById(userId, tripId);
+        List<SectionDTO> sections = sectionService.getAllSectionDTOs(existingTrip.tripId());
+
+        return new TripDTO(
+                existingTrip,
+                sections
+        );
+    }
+
+    private TripDetails getTripById(UUID userId, UUID tripId) {
+        Trip trip = getTrip(userId, tripId);
+
+        return new TripDetails(
+                trip.getTripId(),
+                trip.getTripName(),
+                trip.getCreatedAt(),
+                trip.getImageRef(),
+                trip.getStartDate(),
+                trip.getEndDate()
+        );
+    }
+
 }
