@@ -47,6 +47,72 @@ public class TransportService {
         }
     }
 
+    public void updateElementOrder(Integer order, UUID baseElementId) {
+        TransportElement transportElement = getElementByBaseId(baseElementId);
+        transportElement.setElementOrder(order);
+
+        try {
+            transportRepository.save(transportElement);
+            log.info("Updated element order with id {}", transportElement.getElementId());
+        } catch (Exception e) {
+            log.error("Failed to update transport element order, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
+    public TransportElementDetails updateElement(TransportElementRequest request, BaseElement baseElement) {
+        TransportElement transportElement = getElementByBaseId(baseElement.getBaseElementId());
+
+        if (request.getOriginPlace() != null && !request.getOriginPlace().isBlank()) {
+            transportElement.setOriginPlace(request.getOriginPlace());
+        }
+
+        if (request.getDestinationPlace() != null && !request.getDestinationPlace().isBlank()) {
+            transportElement.setDestinationPlace(request.getDestinationPlace());
+        }
+
+        if (request.getOriginDateTime() != null) {
+            transportElement.setOriginDateTime(request.getOriginDateTime());
+        }
+
+        if (request.getDestinationDateTime() != null) {
+            transportElement.setDestinationDateTime(request.getDestinationDateTime());
+        }
+
+        if (request.getProvider() != null && !request.getProvider().isEmpty()) {
+            if(request.getProvider().isBlank()) {
+                transportElement.setProvider(null);
+            } else {
+                transportElement.setProvider(request.getProvider());
+            }
+        }
+
+        if (request.getOrder() != null) {
+            transportElement.setElementOrder(request.getOrder());
+        }
+
+        try {
+            transportRepository.save(transportElement);
+            log.info("Updated element with id {}", transportElement.getElementId());
+            return mapElementDetails(baseElement, transportElement);
+        } catch (Exception e) {
+            log.error("Failed to update transport element, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
+    public void deleteElement(UUID baseElementId) {
+        TransportElement transportElement = getElementByBaseId(baseElementId);
+
+        try {
+            transportRepository.delete(transportElement);
+            log.info("Deleted element with id {}", transportElement.getElementId());
+        } catch (Exception e) {
+            log.error("Failed to delete transport element, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
     public TransportElement getElementByBaseId(UUID baseElementID) {
         return transportRepository.getTransportElementByBaseId(baseElementID)
                 .orElseThrow(() -> {

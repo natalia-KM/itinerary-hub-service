@@ -45,6 +45,64 @@ public class ActivityService {
         }
     }
 
+    public void updateElementOrder(Integer order, UUID baseElementID) {
+        ActivityElement activityElement = getElementById(baseElementID);
+        activityElement.setElementOrder(order);
+
+        try {
+            activityRepository.save(activityElement);
+            log.info("Updated element order with id {}", activityElement.getElementId());
+        } catch (Exception e) {
+            log.error("Failed to update activity element order, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
+    public ActivityElementDetails updateElement(ActivityElementRequest request, BaseElement baseElement) {
+        ActivityElement activityElement = getElementById(baseElement.getBaseElementId());
+
+        if (request.getActivityName() != null && !request.getActivityName().isBlank()) {
+            activityElement.setActivityName(request.getActivityName());
+        }
+
+        if (request.getLocation() != null && !request.getLocation().isBlank()) {
+            activityElement.setLocation(request.getLocation());
+        }
+
+        if (request.getStartsAt() != null) {
+            activityElement.setStartsAt(request.getStartsAt());
+        }
+
+        if (request.getDuration() != null) {
+            activityElement.setDuration(request.getDuration());
+        }
+
+        if (request.getOrder() != null) {
+            activityElement.setElementOrder(request.getOrder());
+        }
+
+        try {
+            activityRepository.save(activityElement);
+            log.info("Updated element with id {}", activityElement.getElementId());
+            return mapElementDetails(baseElement, activityElement);
+        } catch (Exception e) {
+            log.error("Failed to update activity element, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
+    public void deleteElement(UUID baseElementID) {
+        ActivityElement activityElement = getElementById(baseElementID);
+
+        try {
+            activityRepository.delete(activityElement);
+            log.info("Deleted element with id {}", activityElement.getElementId());
+        } catch (Exception e) {
+            log.error("Failed to delete activity element, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
     public ActivityElement getElementById(UUID baseElementID) {
         return activityRepository.getActivityElementByBaseId(baseElementID)
                 .orElseThrow(() -> {

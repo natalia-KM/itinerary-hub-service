@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -41,9 +42,11 @@ class ElementsServiceTest {
     @InjectMocks
     private ElementsService elementsService;
 
+    private final UUID elementId = UUID.randomUUID();
+
     @ParameterizedTest
     @MethodSource("invalidRequestValuesTransport")
-    void shouldThrowExceptionWhenRequestIsInvalid_transport(Integer order, ElementType type) {
+    void shouldThrowExceptionWhenCreateRequestIsInvalid_transport(Integer order, ElementType type) {
     BaseElementRequest base = new BaseElementRequest(
                 type,
                 null,
@@ -131,6 +134,84 @@ class ElementsServiceTest {
                 Arguments.of(1, null, ElementType.ACCOMMODATION),
                 Arguments.of(1, 2, ElementType.TRANSPORT)
         );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdateRequestIsInvalid_transport() {
+        ElementType invalidType = ElementType.ACTIVITY;
+
+        BaseElementRequest base = new BaseElementRequest(
+                invalidType,
+                null,
+                BigDecimal.valueOf(23.45),
+                "Notes",
+                ElementStatus.PENDING
+        );
+
+        TransportElementRequest request = TransportElementRequest.builder()
+                .baseElementRequest(base)
+                .originPlace("origin")
+                .destinationPlace("destination")
+                .originDateTime(LocalDateTime.now())
+                .destinationDateTime(LocalDateTime.now().plusDays(1))
+                .build();
+
+        BaseElement baseElement = MockData.getNewBaseElement(elementId, invalidType);
+        when(baseElementRepository.findByBaseIdAndOptionId(elementId, MockData.optionId)).thenReturn(Optional.of(baseElement));
+
+        assertThrows(InvalidElementRequest.class, () -> elementsService.updateTransportElement(MockData.mockOption, elementId, request));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdateRequestIsInvalid_activity() {
+        ElementType invalidType = ElementType.ACCOMMODATION;
+
+        BaseElementRequest base = new BaseElementRequest(
+                invalidType,
+                null,
+                BigDecimal.valueOf(23.45),
+                "Notes",
+                ElementStatus.PENDING
+        );
+
+        ActivityElementRequest request = ActivityElementRequest.builder()
+                .baseElementRequest(base)
+                .activityName("activity")
+                .location("location")
+                .startsAt(LocalDateTime.now())
+                .build();
+
+        BaseElement baseElement = MockData.getNewBaseElement(elementId, invalidType);
+        when(baseElementRepository.findByBaseIdAndOptionId(elementId, MockData.optionId)).thenReturn(Optional.of(baseElement));
+
+        assertThrows(InvalidElementRequest.class, () -> elementsService.updateActivityElement(MockData.mockOption, elementId, request));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdateRequestIsInvalid_accomm() {
+        ElementType invalidType = ElementType.ACTIVITY;
+
+        BaseElementRequest base = new BaseElementRequest(
+                invalidType,
+                null,
+                BigDecimal.valueOf(23.45),
+                "Notes",
+                ElementStatus.PENDING
+        );
+        AccommodationEventRequest checkIn = new AccommodationEventRequest(LocalDateTime.now(), null);
+        AccommodationEventRequest checkOut = new AccommodationEventRequest(LocalDateTime.now().plusDays(1), null);
+
+        AccommodationElementRequest request = AccommodationElementRequest.builder()
+                .baseElementRequest(base)
+                .place("place")
+                .location("location")
+                .checkIn(checkIn)
+                .checkOut(checkOut)
+                .build();
+        BaseElement baseElement = MockData.getNewBaseElement(elementId, invalidType);
+        when(baseElementRepository.findByBaseIdAndOptionId(elementId, MockData.optionId)).thenReturn(Optional.of(baseElement));
+
+        assertThrows(InvalidElementRequest.class, () -> elementsService.updateAccommodationElements(MockData.mockOption, elementId, request));
     }
 
     @Test

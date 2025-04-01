@@ -1,6 +1,7 @@
 package com.ih.itinerary_hub_service.elements.service;
 
 import com.ih.itinerary_hub_service.elements.exceptions.ElementDoesNotExist;
+import com.ih.itinerary_hub_service.elements.exceptions.InvalidElementRequest;
 import com.ih.itinerary_hub_service.elements.model.AccommodationElementDetails;
 import com.ih.itinerary_hub_service.elements.persistence.entity.AccommodationElement;
 import com.ih.itinerary_hub_service.elements.persistence.entity.AccommodationEvent;
@@ -8,15 +9,13 @@ import com.ih.itinerary_hub_service.elements.persistence.entity.BaseElement;
 import com.ih.itinerary_hub_service.elements.persistence.repository.AccommodationElementRepository;
 import com.ih.itinerary_hub_service.elements.persistence.repository.AccommodationEventRepository;
 import com.ih.itinerary_hub_service.elements.requests.AccommodationElementRequest;
+import com.ih.itinerary_hub_service.elements.requests.AccommodationEventRequest;
 import com.ih.itinerary_hub_service.elements.types.AccommodationType;
 import com.ih.itinerary_hub_service.exceptions.DbFailure;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -79,6 +78,100 @@ public class AccommodationService {
         return mapAccommodationElementDetails(accommodationElement, List.of(checkIn, checkOut), baseElement);
     }
 
+    public void updateElementOrder(Integer order, UUID baseElementID, Optional<AccommodationType> type) {
+        if(type.isEmpty()) {
+            throw new InvalidElementRequest("Accommodation type must be specified to update acc elements order");
+        }
+
+        AccommodationElement accommodationElement = getElementByBaseId(baseElementID);
+        AccommodationEvent existingEvent = getSingleAccEvent(accommodationElement, type.get());
+
+        existingEvent.setElementOrder(order);
+
+        try {
+            accommodationEventRepository.save(existingEvent);
+
+            log.info("Updated accommodation event order with id: {}", existingEvent.getEventId());
+        } catch (Exception e) {
+            log.error("Failed to update accommodation event order, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
+    public List<AccommodationElementDetails> updateAccommodationElements(AccommodationElementRequest request, BaseElement baseElement) {
+        AccommodationElement accommodationElement = getElementByBaseId(baseElement.getBaseElementId());
+
+        if (request.getPlace() != null && !request.getPlace().isBlank()) {
+            accommodationElement.setPlace(request.getPlace());
+        }
+
+        if (request.getLocation() != null && !request.getLocation().isEmpty()) {
+            if(request.getLocation().isBlank()) {
+                accommodationElement.setLocation(null);
+            } else {
+                accommodationElement.setLocation(request.getLocation());
+            }
+        }
+
+        try {
+            accommodationElementRepository.save(accommodationElement);
+            log.info("Updated acc element with id {}", accommodationElement.getElementId());
+        } catch (Exception e) {
+            log.error("Failed to update accommodation element, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+
+        AccommodationEvent existingCheckIn = getSingleAccEvent(accommodationElement, AccommodationType.CHECK_IN);
+        AccommodationEvent existingCheckOut = getSingleAccEvent(accommodationElement, AccommodationType.CHECK_OUT);
+
+        if(request.getCheckIn() != null) {
+            AccommodationEventRequest checkInRequest = request.getCheckIn();
+            if(checkInRequest.getDateTime() != null) {
+                existingCheckIn.setDatetime(checkInRequest.getDateTime());
+            }
+            if(checkInRequest.getOrder() != null) {
+                existingCheckIn.setElementOrder(checkInRequest.getOrder());
+            }
+        }
+
+        if(request.getCheckOut() != null) {
+            AccommodationEventRequest checkOutRequest = request.getCheckOut();
+            if(checkOutRequest.getDateTime() != null) {
+                existingCheckOut.setDatetime(checkOutRequest.getDateTime());
+            }
+            if(checkOutRequest.getOrder() != null) {
+                existingCheckOut.setElementOrder(checkOutRequest.getOrder());
+            }
+        }
+        try {
+            accommodationEventRepository.save(existingCheckIn);
+            accommodationEventRepository.save(existingCheckOut);
+
+            log.info("Updated accommodation events with ids: {}, {}", existingCheckIn.getEventId(), existingCheckOut.getEventId());
+        } catch (Exception e) {
+            log.error("Failed to update accommodation events, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+
+        List<AccommodationEvent> updatedEvent = Arrays.asList(existingCheckIn, existingCheckOut);
+        return mapAccommodationElementDetails(accommodationElement, updatedEvent, baseElement);
+    }
+
+    public void deleteElement(UUID baseElementID) {
+        AccommodationElement accommodationElement = getElementByBaseId(baseElementID);
+        List<AccommodationEvent> accommodationEvents = getAccommodationEventsPair(baseElementID, accommodationElement.getElementId());
+
+        try {
+            accommodationEventRepository.deleteAll(accommodationEvents);
+            accommodationElementRepository.delete(accommodationElement);
+            log.info("Deleted accommodation element with id {}", accommodationElement.getElementId());
+        } catch (Exception e) {
+            log.error("Failed to delete accommodation element, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
+
     public List<AccommodationElementDetails> getAccommodationDetailsPair(BaseElement baseElement) {
         AccommodationElement accommodationElement = getElementByBaseId(baseElement.getBaseElementId());
         List<AccommodationEvent> accommodationEvents = getAccommodationEventsPair(baseElement.getBaseElementId(), accommodationElement.getElementId());
@@ -87,16 +180,19 @@ public class AccommodationService {
     }
 
     public AccommodationElementDetails getSingleAccommodationDetailsElement(BaseElement baseElement, AccommodationType accommodationType) {
-        List<AccommodationElementDetails> pair = getAccommodationDetailsPair(baseElement);
+        AccommodationElement accommodationElement = getElementByBaseId(baseElement.getBaseElementId());
+        AccommodationEvent event = getSingleAccEvent(accommodationElement, accommodationType);
 
-        Optional<AccommodationElementDetails> elementDetails = pair.stream()
-                .filter(el -> el.getAccommodationType().equals(accommodationType))
-                .findFirst();
+        return mapSingleAccElementDetails(accommodationElement, event, baseElement);
+    }
 
-        if(elementDetails.isEmpty()) {
+    private AccommodationEvent getSingleAccEvent(AccommodationElement accommodationElement, AccommodationType accommodationType) {
+        Optional<AccommodationEvent> event = accommodationEventRepository.getAccommodationEventsByAccommodationIdAndType(accommodationElement.getElementId(), accommodationType);
+
+        if(event.isEmpty() || event.get().getType() != accommodationType) {
             throw new ElementDoesNotExist("Couldn't find the matching accommodation elements");
         }
-        return elementDetails.get();
+        return event.get();
     }
 
     private AccommodationElement getElementByBaseId(UUID baseElementID) {
@@ -122,20 +218,22 @@ public class AccommodationService {
         List<AccommodationElementDetails> accommodationElementDetails = new ArrayList<>();
 
         for(AccommodationEvent accommodationEvent : events) {
-            AccommodationElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, accommodationEvent.getElementOrder());
-
-            AccommodationElementDetails elementDetails =
-                    baseElementBuild
-                            .place(element.getPlace())
-                            .location(element.getLocation())
-                            .accommodationType(accommodationEvent.getType())
-                            .dateTime(accommodationEvent.getDatetime())
-                            .build();
-
+            AccommodationElementDetails elementDetails = mapSingleAccElementDetails(element, accommodationEvent, baseElement);
             accommodationElementDetails.add(elementDetails);
         }
 
         return accommodationElementDetails;
+    }
+
+    private static AccommodationElementDetails mapSingleAccElementDetails(AccommodationElement element, AccommodationEvent accommodationEvent, BaseElement baseElement) {
+        AccommodationElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, accommodationEvent.getElementOrder());
+
+        return baseElementBuild
+                        .place(element.getPlace())
+                        .location(element.getLocation())
+                        .accommodationType(accommodationEvent.getType())
+                        .dateTime(accommodationEvent.getDatetime())
+                        .build();
     }
 
     private static AccommodationElementDetails.Builder getBaseElementBuild(BaseElement baseElement, Integer order) {
