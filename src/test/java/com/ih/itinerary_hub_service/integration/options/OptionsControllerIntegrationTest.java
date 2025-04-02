@@ -208,6 +208,42 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
         }
 
         @Test
+        void updateOption_whenBlankValue_thenIgnore() throws Exception {
+            UpdateOptionRequest updateOptionRequest = new UpdateOptionRequest(
+                    Optional.of(" "), Optional.of(5)
+            );
+
+            mockMvc.perform(MockMvcRequestBuilders.put(
+                                    "/v1/sections/{sectionId}/options/{optionId}",
+                                    SECTION_ONE,
+                                    OPTION_ID)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updateOptionRequest)))
+                    .andExpect(status().isNoContent());
+
+            String expectedJsonResponse = """
+                        {
+                            "optionId": "%s",
+                            "optionName": "%s",
+                            "order": 5
+                        }
+                    """.formatted(OPTION_ID, OPTION_NAME);
+
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                                    "/v1/sections/{sectionId}/options/{optionId}",
+                                    SECTION_ONE,
+                                    OPTION_ID)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(MockMvcResultMatchers.content().json(expectedJsonResponse));
+        }
+
+
+        @Test
         void updateOption_whenOptionDoesNotExist_returnNotFound() throws Exception {
             mockMvc.perform(MockMvcRequestBuilders.put(
                                     "/v1/sections/{sectionId}/options/{optionId}",

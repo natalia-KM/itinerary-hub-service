@@ -109,6 +109,16 @@ class SectionsControllerTest {
     class DeleteSection {
 
         @Test
+        void deleteSection() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.delete("/v1/trips/{tripId}/sections/{sectionId}", tripID.toString(), sectionID.toString())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .requestAttr("userId", userID))
+                    .andExpect(status().isNoContent());
+
+            verify(sectionService, times(1)).deleteSection(sectionID, tripID);
+        }
+
+        @Test
         void deleteSection_dbFail_return500() throws Exception {
             doThrow(new IllegalArgumentException("Custom exception")).when(sectionService).deleteSection(sectionID, tripID);
 

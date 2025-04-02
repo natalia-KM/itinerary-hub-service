@@ -1,9 +1,13 @@
 package com.ih.itinerary_hub_service.unit.sections;
 
 import com.ih.itinerary_hub_service.dto.SectionDTO;
+import com.ih.itinerary_hub_service.exceptions.DbFailure;
 import com.ih.itinerary_hub_service.options.service.OptionsService;
+import com.ih.itinerary_hub_service.sections.exceptions.CreateSectionInvalidRequest;
 import com.ih.itinerary_hub_service.sections.persistence.entity.Section;
 import com.ih.itinerary_hub_service.sections.persistence.repository.SectionsRepository;
+import com.ih.itinerary_hub_service.sections.requests.CreateSectionRequest;
+import com.ih.itinerary_hub_service.sections.requests.UpdateSectionRequest;
 import com.ih.itinerary_hub_service.sections.responses.SectionDetails;
 import com.ih.itinerary_hub_service.sections.service.SectionService;
 import com.ih.itinerary_hub_service.utils.MockData;
@@ -18,9 +22,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -94,5 +98,43 @@ class SectionServiceTest {
                 "Section Name",
                 order
         );
+    }
+
+    @Test
+    void createSection_shouldThrow_whenOrderIsNull() {
+        CreateSectionRequest request = new CreateSectionRequest("Name", null);
+
+        assertThrows(CreateSectionInvalidRequest.class, () -> sectionService.createSection(MockData.mockTrip, request));
+    }
+
+    @Test
+    void createSection_shouldThrow_whenOrderIsInvalid() {
+        CreateSectionRequest request = new CreateSectionRequest("Name", -1);
+
+        assertThrows(CreateSectionInvalidRequest.class, () -> sectionService.createSection(MockData.mockTrip, request));
+    }
+
+    @Test
+    void createSection_shouldThrow_whenDbFails() {
+        doThrow(IllegalArgumentException.class).when(sectionsRepository).save(any(Section.class));
+        assertThrows(DbFailure.class, () -> sectionService.createSection(MockData.mockTrip, new CreateSectionRequest("Name", 1)));
+    }
+
+    @Test
+    void updateSection_shouldThrow_whenDbFails() {
+        when(sectionsRepository.findBySectionIdAndTripId(MockData.sectionId, MockData.tripId)).thenReturn(Optional.of(MockData.mockSection));
+
+        doThrow(IllegalArgumentException.class).when(sectionsRepository).save(any(Section.class));
+
+        assertThrows(DbFailure.class, () -> sectionService.updateSection(MockData.sectionId, MockData.tripId, new UpdateSectionRequest(Optional.of("Name"), Optional.of(1))));
+    }
+
+    @Test
+    void deleteSection_shouldThrow_whenDbFails() {
+        when(sectionsRepository.findBySectionIdAndTripId(MockData.sectionId, MockData.tripId)).thenReturn(Optional.of(MockData.mockSection));
+
+        doThrow(IllegalArgumentException.class).when(sectionsRepository).delete(any(Section.class));
+
+        assertThrows(DbFailure.class, () -> sectionService.deleteSection(MockData.sectionId, MockData.tripId));
     }
 }

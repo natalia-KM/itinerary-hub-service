@@ -190,6 +190,36 @@ class SectionsControllerIntegrationTest extends BaseIntegrationTest {
                     .andExpect(MockMvcResultMatchers.content().json(expectedJsonResponse));
         }
 
+
+        @Test
+        void updateSection_whenBlankValues_thenIgnore() throws Exception {
+            UpdateSectionRequest updateSectionRequest = new UpdateSectionRequest(
+                    Optional.of(" "), Optional.of(5)
+            );
+
+            mockMvc.perform(MockMvcRequestBuilders.put("/v1/trips/{tripId}/sections/{sectionId}", GUEST_USER_TRIP_ONE.toString(), SECTION_ONE)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updateSectionRequest)))
+                    .andExpect(status().isNoContent());
+
+            String expectedJsonResponse = """
+                        {
+                            "sectionId": "%s",
+                            "sectionName": "%s",
+                            "order": 5
+                        }
+                    """.formatted(SECTION_ONE, SECTION_NAME);
+
+            mockMvc.perform(MockMvcRequestBuilders.get("/v1/trips/{tripId}/sections/{sectionId}", GUEST_USER_TRIP_ONE.toString(), SECTION_ONE)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(MockMvcResultMatchers.content().json(expectedJsonResponse));
+        }
+
         @Test
         void updateSection_whenSectionDoesNotExist_returnNotFound() throws Exception {
             mockMvc.perform(MockMvcRequestBuilders.put("/v1/trips/{tripId}/sections/{sectionId}", GUEST_USER_TRIP_ONE.toString(), UUID.randomUUID().toString())

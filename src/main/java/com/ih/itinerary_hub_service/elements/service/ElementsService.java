@@ -84,7 +84,7 @@ public class ElementsService {
     public TransportElementDetails getTransportElementById(Option option, UUID baseElementId) {
         BaseElement baseElement = getBaseElement(option, baseElementId);
 
-        if(baseElement == null || baseElement.getElementType() != ElementType.TRANSPORT) {
+        if(baseElement.getElementType() != ElementType.TRANSPORT) {
             throw new InvalidElementRequest("Invalid request");
         }
         return transportService.getTransportElementDetails(baseElement);
@@ -93,7 +93,7 @@ public class ElementsService {
     public ActivityElementDetails getActivityElementById(Option option, UUID baseElementId) {
         BaseElement baseElement = getBaseElement(option, baseElementId);
 
-        if(baseElement == null || baseElement.getElementType() != ElementType.ACTIVITY) {
+        if(baseElement.getElementType() != ElementType.ACTIVITY) {
             throw new InvalidElementRequest("Invalid request");
         }
         return activityService.getElementDetailsByID(baseElement);
@@ -102,7 +102,7 @@ public class ElementsService {
     public AccommodationElementDetails getAccommElementById(Option option, UUID baseElementId, AccommodationType type) {
         BaseElement baseElement = getBaseElement(option, baseElementId);
 
-        if(baseElement == null || baseElement.getElementType() != ElementType.ACCOMMODATION) {
+        if(baseElement.getElementType() != ElementType.ACCOMMODATION) {
             log.error("The element with id {} is not accommodation", baseElementId);
             throw new InvalidElementRequest("Invalid request");
         }
@@ -113,7 +113,7 @@ public class ElementsService {
         BaseElementRequest baseRequest = request.getBaseElementRequest();
         BaseElement existingBaseElement = getBaseElement(option, baseElementId);
 
-        if(existingBaseElement == null || existingBaseElement.getElementType() != ElementType.TRANSPORT) {
+        if(existingBaseElement.getElementType() != ElementType.TRANSPORT) {
             log.error("The element with id {} is not transport", baseElementId);
             throw new InvalidElementRequest("Invalid request");
         }
@@ -126,7 +126,7 @@ public class ElementsService {
         BaseElementRequest baseRequest = request.getBaseElementRequest();
         BaseElement existingBaseElement = getBaseElement(option, baseElementId);
 
-        if(existingBaseElement == null || existingBaseElement.getElementType() != ElementType.ACTIVITY) {
+        if(existingBaseElement.getElementType() != ElementType.ACTIVITY) {
             log.error("The element with id {} is not activity", baseElementId);
             throw new InvalidElementRequest("Invalid request");
         }
@@ -140,7 +140,7 @@ public class ElementsService {
         BaseElementRequest baseRequest = request.getBaseElementRequest();
         BaseElement existingBaseElement = getBaseElement(option, baseElementId);
 
-        if(existingBaseElement == null || existingBaseElement.getElementType() != ElementType.ACCOMMODATION) {
+        if(existingBaseElement.getElementType() != ElementType.ACCOMMODATION) {
             log.error("The element with id {} is not accommodation", baseElementId);
             throw new InvalidElementRequest("Invalid request");
         }
@@ -155,7 +155,6 @@ public class ElementsService {
             case ACTIVITY: activityService.updateElementOrder(order, baseElementId); break;
             case TRANSPORT: transportService.updateElementOrder(order, baseElementId); break;
             case ACCOMMODATION: accommodationService.updateElementOrder(order, baseElementId, accType); break;
-            default: throw new InvalidElementRequest("Invalid request");
         }
     }
 
@@ -164,7 +163,6 @@ public class ElementsService {
             case ACTIVITY: activityService.deleteElement(baseElementId); break;
             case TRANSPORT: transportService.deleteElement(baseElementId); break;
             case ACCOMMODATION: accommodationService.deleteElement(baseElementId); break;
-            default: throw new InvalidElementRequest("Invalid request");
         }
 
         BaseElement baseElement = getBaseElement(option, baseElementId);

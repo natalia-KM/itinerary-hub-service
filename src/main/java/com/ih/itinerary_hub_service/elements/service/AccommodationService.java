@@ -190,7 +190,7 @@ public class AccommodationService {
         Optional<AccommodationEvent> event = accommodationEventRepository.getAccommodationEventsByAccommodationIdAndType(accommodationElement.getElementId(), accommodationType);
 
         if(event.isEmpty() || event.get().getType() != accommodationType) {
-            throw new ElementDoesNotExist("Couldn't find the matching accommodation elements");
+            throw new ElementDoesNotExist("Couldn't find the matching accommodation events");
         }
         return event.get();
     }

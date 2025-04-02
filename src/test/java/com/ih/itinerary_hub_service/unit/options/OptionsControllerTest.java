@@ -109,6 +109,16 @@ class OptionsControllerTest {
     class DeleteOption {
 
         @Test
+        void deleteOption() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.delete("/v1/sections/{sectionId}/options/{optionId}", sectionID.toString(), optionID.toString())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .requestAttr("userId", userID))
+                    .andExpect(status().isNoContent());
+
+            verify(optionsService, times(1)).deleteOption(optionID, sectionID);
+        }
+
+        @Test
         void deleteOption_dbFail_return500() throws Exception {
             doThrow(new IllegalArgumentException("Custom exception")).when(optionsService).deleteOption(optionID, sectionID);
 
