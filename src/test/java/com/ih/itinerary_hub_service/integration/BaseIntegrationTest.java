@@ -27,6 +27,18 @@ import java.util.UUID;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BaseIntegrationTest {
 
+    protected static final UUID GUEST_USER_TRIP_ONE = UUID.fromString("9c5bb970-faef-419b-a447-365b9471a4b0");
+    protected static final UUID GUEST_USER_TRIP_TWO = UUID.fromString("cca715f0-8092-4208-80d3-afb7ef35d7f7");
+
+    protected static final String SECTION_ONE = "a3c84e94-157b-436f-9e77-2b461c7c3bf2";
+
+    protected static final String OPTION_ONE = "0d78ebf0-0159-4843-b54b-a696644f26fc";
+    protected static final String OPTION_TWO = "eb7fd861-6dba-4893-a4c8-bac1bd5a47ba";
+
+    protected static final String TRANSPORT_ELEMENT = "4e52ae05-06dc-423f-b86f-51a00cb8c452";
+    protected static final String ACTIVITY_ELEMENT = "b647b387-31ad-4ffb-a9d2-91551d4b3138";
+    protected static final String ACCOMMODATION_ELEMENT = "e4f56f0d-01ab-4ddb-be38-486ebefc4ede";
+
     private static final String SECRET_KEY = "this-is-a-very-long-key-only-for-testing-spring-pls-stop-complaining";
     protected static final SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 

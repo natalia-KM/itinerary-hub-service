@@ -1,5 +1,6 @@
 package com.ih.itinerary_hub_service.trips.controller;
 
+import com.ih.itinerary_hub_service.dto.TripDTO;
 import com.ih.itinerary_hub_service.trips.requests.CreateTripRequest;
 import com.ih.itinerary_hub_service.trips.requests.UpdateTripRequest;
 import com.ih.itinerary_hub_service.trips.responses.TripDetails;
@@ -40,7 +41,7 @@ public class TripsController {
     @PostMapping(TRIPS_PATH)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "${trips.createTrip.summary}")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Trip created")})
+    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Trip created")})
     public void createTrip(@RequestAttribute("userId") UUID userId, @Valid @RequestBody CreateTripRequest request) {
         tripsService.createTrip(userId, request);
     }
@@ -48,11 +49,12 @@ public class TripsController {
     @GetMapping(TRIPS_PATH + "/{tripId}")
     @Operation(summary = "${trips.getTripById.summary}")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Trip retrieved")})
-    public TripDetails getTripById(@RequestAttribute("userId") UUID userId, @PathVariable UUID tripId) {
-        return tripsService.getTripById(userId, tripId);
+    public TripDTO getTripById(@RequestAttribute("userId") UUID userId, @PathVariable UUID tripId) {
+        return tripsService.traverseTrip(userId, tripId);
     }
 
     @PutMapping(TRIPS_PATH  + "/{tripId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "${trips.updateTrip.summary}")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Trip updated")})
     public void updateTrip(@RequestAttribute("userId") UUID userId, @PathVariable UUID tripId, @Valid @RequestBody UpdateTripRequest request) {

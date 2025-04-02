@@ -1,0 +1,98 @@
+package com.ih.itinerary_hub_service.elements.model;
+
+import com.ih.itinerary_hub_service.elements.types.ElementStatus;
+import com.ih.itinerary_hub_service.elements.types.ElementType;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Getter
+@Setter
+public abstract class BaseElementDetails {
+    private UUID baseElementID;
+    private UUID optionID;
+    private LocalDateTime lastUpdatedAt;
+    private ElementType elementType;
+    private String link;
+    private BigDecimal price;
+    private String notes;
+    private ElementStatus status;
+    private Integer order;
+
+    protected BaseElementDetails(
+        BaseElementDetailsBuilder<?> builder
+    ) {
+        this.baseElementID = builder.baseElementID;
+        this.optionID = builder.optionID;
+        this.lastUpdatedAt = builder.lastUpdatedAt;
+        this.elementType = builder.elementType;
+        this.link = builder.link;
+        this.price = builder.price;
+        this.notes = builder.notes;
+        this.status = builder.status;
+        this.order = builder.order;
+    }
+
+    public static abstract class BaseElementDetailsBuilder<T extends BaseElementDetailsBuilder<T>> {
+        private UUID baseElementID;
+        private UUID optionID;
+        private LocalDateTime lastUpdatedAt;
+        private ElementType elementType;
+        private String link;
+        private BigDecimal price;
+        private String notes;
+        private ElementStatus status;
+        private Integer order;
+
+        public T baseElementID(UUID baseElementID) {
+            this.baseElementID = baseElementID;
+            return self();
+        }
+
+        public T optionID(UUID optionID) {
+            this.optionID = optionID;
+            return self();
+        }
+
+        public T lastUpdatedAt(LocalDateTime lastUpdatedAt) {
+            this.lastUpdatedAt = lastUpdatedAt;
+            return self();
+        }
+
+        public T elementType(ElementType elementType) {
+            this.elementType = elementType;
+            return self();
+        }
+
+        public T link(String link) {
+            this.link = link;
+            return self();
+        }
+
+        public T price(BigDecimal price) {
+            this.price = price;
+            return self();
+        }
+
+        public T notes(String notes) {
+            this.notes = notes;
+            return self();
+        }
+
+        public T order(Integer order) {
+            this.order = order;
+            return self();
+        }
+
+        public T status(ElementStatus status) {
+            this.status = status;
+            return self();
+        }
+
+        protected abstract T self();
+        public abstract BaseElementDetails build();
+    }
+}
