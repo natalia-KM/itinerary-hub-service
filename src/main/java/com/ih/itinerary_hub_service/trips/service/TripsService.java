@@ -140,7 +140,7 @@ public class TripsService {
         );
     }
 
-    private TripDetails getTripById(UUID userId, UUID tripId) {
+    public TripDetails getTripById(UUID userId, UUID tripId) {
         Trip trip = getTrip(userId, tripId);
 
         return new TripDetails(
