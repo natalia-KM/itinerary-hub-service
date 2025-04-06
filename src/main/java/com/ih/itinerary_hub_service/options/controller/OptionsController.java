@@ -58,7 +58,7 @@ public class OptionsController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "${options.updateOption.summary}")
     @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Option updated")})
-    public void updateSection(
+    public void updateOption(
             @PathVariable UUID sectionId,
             @PathVariable UUID optionId,
             @Valid @RequestBody UpdateOptionRequest updateOptionRequest
@@ -70,7 +70,7 @@ public class OptionsController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "${options.deleteOption.summary}")
     @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Option deleted")})
-    public void deleteSection(
+    public void deleteOption(
             @PathVariable UUID sectionId,
             @PathVariable UUID optionId
     ) {

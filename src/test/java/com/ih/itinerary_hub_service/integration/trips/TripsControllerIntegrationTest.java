@@ -288,6 +288,27 @@ class TripsControllerIntegrationTest extends BaseIntegrationTest {
     @Nested
     class HappyPaths {
         @Test
+        void getTripDetails() throws Exception {
+            String expectedJsonResponse = """
+                        {
+                          "tripId": "9c5bb970-faef-419b-a447-365b9471a4b0",
+                          "tripName": "Paris Trip",
+                          "createdAt": "2025-03-22T00:00:00",
+                          "imageRef": "default",
+                          "startDate": "2025-04-25T00:00:00",
+                          "endDate": "2025-04-28T00:00:00"
+                        }
+                      """;
+
+            mockMvc.perform(MockMvcRequestBuilders.get("/v1/trips/{tripId}/details", GUEST_USER_TRIP_ONE.toString())
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(MockMvcResultMatchers.content().json(expectedJsonResponse, JsonCompareMode.STRICT));
+        }
+
+        @Test
         void getTripById_whenValidRequest_returnTrip() throws Exception {
             String expectedJsonResponse = """
                       {
@@ -397,8 +418,7 @@ class TripsControllerIntegrationTest extends BaseIntegrationTest {
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(MockMvcResultMatchers.content().json(expectedJsonResponse, JsonCompareMode.STRICT))
-                    .andReturn();
+                    .andExpect(MockMvcResultMatchers.content().json(expectedJsonResponse, JsonCompareMode.STRICT));
         }
 
         @Test

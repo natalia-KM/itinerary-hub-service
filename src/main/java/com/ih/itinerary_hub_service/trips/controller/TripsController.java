@@ -53,6 +53,13 @@ public class TripsController {
         return tripsService.traverseTrip(userId, tripId);
     }
 
+    @GetMapping(TRIPS_PATH + "/{tripId}/details")
+    @Operation(summary = "${trips.getTripById.summary}")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Trip details retrieved")})
+    public TripDetails getTripDetails(@RequestAttribute("userId") UUID userId, @PathVariable UUID tripId) {
+        return tripsService.getTripById(userId, tripId);
+    }
+
     @PutMapping(TRIPS_PATH  + "/{tripId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "${trips.updateTrip.summary}")
