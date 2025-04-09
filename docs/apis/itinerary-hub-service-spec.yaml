@@ -137,7 +137,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/TripDetails"
+                  "$ref": "#/components/schemas/TripDTO"
                 }
               }
             }
@@ -184,6 +184,9 @@
           },
           "200": {
             "description": "Trip updated"
+          },
+          "204": {
+            "description": "No Content"
           }
         }
       },
@@ -217,6 +220,975 @@
           },
           "204": {
             "description": "Trip deleted"
+          }
+        }
+      }
+    },
+    "/v1/trips/{tripId}/sections": {
+      "get": {
+        "tags": [
+          "sections-controller"
+        ],
+        "summary": "Get Section by ID",
+        "operationId": "getSectionsInTrip",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Sections retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SectionDetails"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "sections-controller"
+        ],
+        "summary": "Get Section by ID",
+        "operationId": "updateSection",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SectionDetails"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Section retrieved"
+          },
+          "204": {
+            "description": "No Content"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "sections-controller"
+        ],
+        "summary": "Create Section",
+        "operationId": "createSection",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Section created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/trips/{tripId}/sections/{sectionId}": {
+      "get": {
+        "tags": [
+          "sections-controller"
+        ],
+        "summary": "Get Section by ID",
+        "operationId": "getSection",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Section retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "sections-controller"
+        ],
+        "summary": "Update Section",
+        "operationId": "updateSection_1",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Section updated"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "sections-controller"
+        ],
+        "summary": "Delete Section",
+        "operationId": "deleteSection",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Section deleted"
+          }
+        }
+      }
+    },
+    "/v1/sections/{sectionId}/options": {
+      "get": {
+        "tags": [
+          "options-controller"
+        ],
+        "summary": "Get Option by ID",
+        "operationId": "getOptionsInSection",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Options retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OptionDetails"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "options-controller"
+        ],
+        "summary": "Get Option by ID",
+        "operationId": "updateOrder",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OptionDetails"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Options updated"
+          },
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/v1/sections/{sectionId}/options/{optionId}": {
+      "get": {
+        "tags": [
+          "options-controller"
+        ],
+        "summary": "Get Option by ID",
+        "operationId": "getOption",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Option retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "options-controller"
+        ],
+        "summary": "Update Option",
+        "operationId": "updateOption",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Option updated"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "options-controller"
+        ],
+        "summary": "Delete Option",
+        "operationId": "deleteOption",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Option deleted"
+          }
+        }
+      }
+    },
+    "/v1/sections/{sectionId}/options/{optionId}/elements/{baseElementId}/transport": {
+      "get": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Get transport element",
+        "operationId": "getTransportElementById",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "baseElementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Element retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransportElementDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Get transport element",
+        "operationId": "updateTransportElement",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "baseElementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransportElementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Element updated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransportElementDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sections/{sectionId}/options/{optionId}/elements/{baseElementId}/activity": {
+      "get": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Get activity element",
+        "operationId": "getActivityElementById",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "baseElementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Element retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityElementDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Get activity element",
+        "operationId": "updateActivityElement",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "baseElementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActivityElementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Element updated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityElementDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sections/{sectionId}/options/{optionId}/elements/{baseElementId}/accommodation": {
+      "get": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Get accommodation element",
+        "operationId": "getAccommodationElementById",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "baseElementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Element retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccommodationElementDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Get accommodation element",
+        "operationId": "updateAccommodationElement",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "baseElementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccommodationElementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Element updated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AccommodationElementDetails"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/elements/{baseElementId}": {
+      "put": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Update Element Order",
+        "description": "Quick way of updating the element\u0027s order as doesn\u0027t require full request body",
+        "operationId": "updateOrder_1",
+        "parameters": [
+          {
+            "name": "baseElementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateElementOrderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Element updated"
           }
         }
       }
@@ -315,11 +1287,297 @@
               }
             }
           },
-          "200": {
+          "201": {
             "description": "Trip created"
+          }
+        }
+      }
+    },
+    "/v1/trips/{tripId}/sections/{sectionId}/options": {
+      "post": {
+        "tags": [
+          "options-controller"
+        ],
+        "summary": "Create Option",
+        "operationId": "createOption",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "201": {
-            "description": "Created"
+            "description": "Option created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptionDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sections/{sectionId}/options/{optionId}/elements/transport": {
+      "post": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Create transport element",
+        "operationId": "createTransportElement",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransportElementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Element created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransportElementDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sections/{sectionId}/options/{optionId}/elements/activity": {
+      "post": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Create activity element",
+        "operationId": "createActivityElement",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActivityElementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Element created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityElementDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/sections/{sectionId}/options/{optionId}/elements/accommodation": {
+      "post": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Create accommodation element",
+        "operationId": "createAccommodationElement",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccommodationElementRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Element created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AccommodationElementDetails"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/trips/{tripId}/details": {
+      "get": {
+        "tags": [
+          "trips-controller"
+        ],
+        "summary": "Get Trip by ID",
+        "operationId": "getTripDetails",
+        "parameters": [
+          {
+            "name": "tripId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Trip details retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -352,6 +1610,70 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/v1/sections/{sectionId}/options/{optionId}/elements/{baseElementId}": {
+      "delete": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Delete Element",
+        "operationId": "deleteElement",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sectionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "baseElementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Element updated"
+          },
+          "204": {
+            "description": "No Content"
           }
         }
       }
@@ -409,6 +1731,398 @@
           }
         }
       },
+      "SectionDetails": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sectionName": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateSectionRequest": {
+        "type": "object",
+        "properties": {
+          "sectionName": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "OptionDetails": {
+        "type": "object",
+        "properties": {
+          "optionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "optionName": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateOptionRequest": {
+        "type": "object",
+        "properties": {
+          "optionName": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "BaseElementRequest": {
+        "type": "object",
+        "properties": {
+          "elementType": {
+            "type": "string",
+            "enum": [
+              "ACTIVITY",
+              "TRANSPORT",
+              "ACCOMMODATION"
+            ]
+          },
+          "link": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "BOOKED",
+              "CANCELLED",
+              "EXPIRED"
+            ]
+          }
+        }
+      },
+      "TransportElementRequest": {
+        "type": "object",
+        "properties": {
+          "baseElementRequest": {
+            "$ref": "#/components/schemas/BaseElementRequest"
+          },
+          "originPlace": {
+            "type": "string"
+          },
+          "destinationPlace": {
+            "type": "string"
+          },
+          "originDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "destinationDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "TransportElementDetails": {
+        "type": "object",
+        "properties": {
+          "baseElementID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "optionID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lastUpdatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "elementType": {
+            "type": "string",
+            "enum": [
+              "ACTIVITY",
+              "TRANSPORT",
+              "ACCOMMODATION"
+            ]
+          },
+          "link": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "BOOKED",
+              "CANCELLED",
+              "EXPIRED"
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "originPlace": {
+            "type": "string"
+          },
+          "destinationPlace": {
+            "type": "string"
+          },
+          "originDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "destinationDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provider": {
+            "type": "string"
+          }
+        }
+      },
+      "ActivityElementRequest": {
+        "type": "object",
+        "properties": {
+          "baseElementRequest": {
+            "$ref": "#/components/schemas/BaseElementRequest"
+          },
+          "activityName": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ActivityElementDetails": {
+        "type": "object",
+        "properties": {
+          "baseElementID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "optionID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lastUpdatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "elementType": {
+            "type": "string",
+            "enum": [
+              "ACTIVITY",
+              "TRANSPORT",
+              "ACCOMMODATION"
+            ]
+          },
+          "link": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "BOOKED",
+              "CANCELLED",
+              "EXPIRED"
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "activityName": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "AccommodationElementRequest": {
+        "type": "object",
+        "properties": {
+          "baseElementRequest": {
+            "$ref": "#/components/schemas/BaseElementRequest"
+          },
+          "place": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "checkIn": {
+            "$ref": "#/components/schemas/AccommodationEventRequest"
+          },
+          "checkOut": {
+            "$ref": "#/components/schemas/AccommodationEventRequest"
+          }
+        }
+      },
+      "AccommodationEventRequest": {
+        "type": "object",
+        "properties": {
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "AccommodationElementDetails": {
+        "type": "object",
+        "properties": {
+          "baseElementID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "optionID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lastUpdatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "elementType": {
+            "type": "string",
+            "enum": [
+              "ACTIVITY",
+              "TRANSPORT",
+              "ACCOMMODATION"
+            ]
+          },
+          "link": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "BOOKED",
+              "CANCELLED",
+              "EXPIRED"
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "place": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "accommodationType": {
+            "type": "string",
+            "enum": [
+              "CHECK_IN",
+              "CHECK_OUT"
+            ]
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "UpdateElementOrderRequest": {
+        "type": "object",
+        "properties": {
+          "elementType": {
+            "type": "string",
+            "enum": [
+              "ACTIVITY",
+              "TRANSPORT",
+              "ACCOMMODATION"
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "accommodationType": {
+            "type": "string",
+            "enum": [
+              "CHECK_IN",
+              "CHECK_OUT"
+            ]
+          }
+        },
+        "required": [
+          "elementType",
+          "order"
+        ]
+      },
       "UserDetailsRequest": {
         "type": "object",
         "properties": {
@@ -446,6 +2160,40 @@
           "tripName"
         ]
       },
+      "CreateSectionRequest": {
+        "type": "object",
+        "properties": {
+          "sectionName": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "order",
+          "sectionName"
+        ]
+      },
+      "CreateOptionRequest": {
+        "type": "object",
+        "properties": {
+          "optionName": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "optionName",
+          "order"
+        ]
+      },
       "TripDetails": {
         "type": "object",
         "properties": {
@@ -470,6 +2218,95 @@
           "endDate": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "BaseElementDetails": {
+        "type": "object",
+        "properties": {
+          "baseElementID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "optionID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "lastUpdatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "elementType": {
+            "type": "string",
+            "enum": [
+              "ACTIVITY",
+              "TRANSPORT",
+              "ACCOMMODATION"
+            ]
+          },
+          "link": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "BOOKED",
+              "CANCELLED",
+              "EXPIRED"
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "OptionDTO": {
+        "type": "object",
+        "properties": {
+          "optionDetails": {
+            "$ref": "#/components/schemas/OptionDetails"
+          },
+          "baseElementDetails": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BaseElementDetails"
+            }
+          }
+        }
+      },
+      "SectionDTO": {
+        "type": "object",
+        "properties": {
+          "sectionDetails": {
+            "$ref": "#/components/schemas/SectionDetails"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OptionDTO"
+            }
+          }
+        }
+      },
+      "TripDTO": {
+        "type": "object",
+        "properties": {
+          "tripDetails": {
+            "$ref": "#/components/schemas/TripDetails"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SectionDTO"
+            }
           }
         }
       }

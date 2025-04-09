@@ -2,6 +2,7 @@ package com.ih.itinerary_hub_service.sections.persistence.repository;
 
 import com.ih.itinerary_hub_service.sections.persistence.entity.Section;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,5 +20,7 @@ public interface SectionsRepository extends JpaRepository<Section, UUID> {
     @Query("SELECT t FROM Section t WHERE t.trip.tripId = :tripId")
     List<Section> findByTripId(@Param("tripId") UUID tripId);
 
-
+    @Modifying
+    @Query("UPDATE Section s SET s.sectionOrder = :newOrder WHERE s.sectionId = :sectionId AND s.trip.tripId = :tripId")
+    void updateOrder(@Param("sectionId") UUID sectionId, @Param("tripId") UUID tripId, @Param("newOrder") int newOrder);
 }

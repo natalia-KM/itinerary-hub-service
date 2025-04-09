@@ -31,6 +31,7 @@ public class BaseIntegrationTest {
     protected static final UUID GUEST_USER_TRIP_TWO = UUID.fromString("cca715f0-8092-4208-80d3-afb7ef35d7f7");
 
     protected static final String SECTION_ONE = "a3c84e94-157b-436f-9e77-2b461c7c3bf2";
+    protected static final String SECTION_TWO = "c13dd7ad-8f7d-4f93-8edd-ee3951097592";
 
     protected static final String OPTION_ONE = "0d78ebf0-0159-4843-b54b-a696644f26fc";
     protected static final String OPTION_TWO = "eb7fd861-6dba-4893-a4c8-bac1bd5a47ba";

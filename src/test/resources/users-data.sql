@@ -13,6 +13,9 @@ VALUES ('cca715f0-8092-4208-80d3-afb7ef35d7f7', '550e8400-e29b-41d4-a716-4466554
 INSERT INTO dev.sections (section_id, trip_id, section_name, section_order)
 VALUES ('a3c84e94-157b-436f-9e77-2b461c7c3bf2', '9c5bb970-faef-419b-a447-365b9471a4b0', 'Section 1',1);
 
+INSERT INTO dev.sections (section_id, trip_id, section_name, section_order)
+VALUES ('c13dd7ad-8f7d-4f93-8edd-ee3951097592', '9c5bb970-faef-419b-a447-365b9471a4b0', 'Section 2',2);
+
 --Two options for guest account
 INSERT INTO dev.options (option_id, section_id, option_name, option_order)
 VALUES ('0d78ebf0-0159-4843-b54b-a696644f26fc', 'a3c84e94-157b-436f-9e77-2b461c7c3bf2', 'Option 1',1);
