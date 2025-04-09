@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -52,6 +53,26 @@ public class SectionsController {
             @PathVariable UUID sectionId
     ) {
         return sectionService.getSectionDetails(sectionId, tripId);
+    }
+
+    @GetMapping("/trips/{tripId}/sections")
+    @Operation(summary = "${sections.getSectionById.summary}")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Sections retrieved")})
+    public List<SectionDetails> getSectionsInTrip(
+            @PathVariable UUID tripId
+    ) {
+        return sectionService.getSections(tripId);
+    }
+
+    @PutMapping("/trips/{tripId}/sections")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "${sections.getSectionById.summary}")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Section retrieved")})
+    public void updateSection(
+            @PathVariable UUID tripId,
+            @RequestBody List<SectionDetails> sectionDetails
+    ) {
+        sectionService.updateSectionOrders(tripId, sectionDetails);
     }
 
     @PutMapping("/trips/{tripId}/sections/{sectionId}")

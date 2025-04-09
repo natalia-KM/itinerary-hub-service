@@ -99,7 +99,7 @@ class TripsControllerIntegrationTest extends BaseIntegrationTest {
     class GetAllTrips {
         @Test
         void getAllTrips_whenValidRequest_returnListOfTrips() throws Exception {
-            String expectedJsonResponse = getGuestUserTripsExpectedReponse();
+            String expectedJsonResponse = getGuestUserTripsExpectedResponse();
 
             mockMvc.perform(MockMvcRequestBuilders.get("/v1/trips")
                             .cookie(guestUserAccessTokenCookie)
@@ -109,7 +109,7 @@ class TripsControllerIntegrationTest extends BaseIntegrationTest {
                     .andExpect(MockMvcResultMatchers.content().json(expectedJsonResponse));
         }
 
-        private static String getGuestUserTripsExpectedReponse() {
+        private static String getGuestUserTripsExpectedResponse() {
 
             return """
                     [

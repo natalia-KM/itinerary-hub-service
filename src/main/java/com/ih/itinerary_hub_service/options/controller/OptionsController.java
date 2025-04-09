@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -52,6 +53,26 @@ public class OptionsController {
             @PathVariable UUID optionId
     ) {
         return optionsService.getOptionDetails(optionId, sectionId);
+    }
+
+    @GetMapping("/sections/{sectionId}/options")
+    @Operation(summary = "${options.getOptionById.summary}")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Options retrieved")})
+    public List<OptionDetails> getOptionsInSection(
+            @PathVariable UUID sectionId
+    ) {
+        return optionsService.getOptions(sectionId);
+    }
+
+    @PutMapping("/sections/{sectionId}/options")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "${options.getOptionById.summary}")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Options updated")})
+    public void updateOrder(
+            @PathVariable UUID sectionId,
+            @RequestBody List<OptionDetails> updatedDetails
+    ) {
+        optionsService.updateOptionOrders(sectionId, updatedDetails);
     }
 
     @PutMapping("/sections/{sectionId}/options/{optionId}")

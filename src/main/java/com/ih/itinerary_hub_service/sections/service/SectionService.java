@@ -3,6 +3,7 @@ package com.ih.itinerary_hub_service.sections.service;
 import com.ih.itinerary_hub_service.dto.OptionDTO;
 import com.ih.itinerary_hub_service.dto.SectionDTO;
 import com.ih.itinerary_hub_service.exceptions.DbFailure;
+import com.ih.itinerary_hub_service.options.responses.OptionDetails;
 import com.ih.itinerary_hub_service.options.service.OptionsService;
 import com.ih.itinerary_hub_service.sections.exceptions.CreateSectionInvalidRequest;
 import com.ih.itinerary_hub_service.sections.exceptions.SectionNotFound;
@@ -12,6 +13,7 @@ import com.ih.itinerary_hub_service.sections.requests.CreateSectionRequest;
 import com.ih.itinerary_hub_service.sections.requests.UpdateSectionRequest;
 import com.ih.itinerary_hub_service.sections.responses.SectionDetails;
 import com.ih.itinerary_hub_service.trips.persistence.entity.Trip;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -101,6 +104,20 @@ public class SectionService {
                     log.error("Section not found with ID: {} and tripId: {}", sectionId, tripId);
                     return new SectionNotFound("Section not found");
                 });
+    }
+
+    @Transactional
+    public void updateSectionOrders(UUID tripId, List<SectionDetails> updatedSections) {
+        for(SectionDetails sectionDetails : updatedSections) {
+            sectionsRepository.updateOrder(sectionDetails.sectionId(), tripId, sectionDetails.order());
+        }
+    }
+
+    public List<SectionDetails> getSections(UUID tripId) {
+        return sectionsRepository.findByTripId(tripId).stream()
+                .map(this::mapSectionDetails)
+                .sorted(Comparator.comparing(SectionDetails::order))
+                .collect(Collectors.toList());
     }
 
     public List<SectionDTO> getAllSectionDTOs(UUID tripId) {

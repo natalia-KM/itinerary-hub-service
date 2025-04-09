@@ -5,6 +5,7 @@ import com.ih.itinerary_hub_service.integration.BaseIntegrationTest;
 import com.ih.itinerary_hub_service.options.persistence.repository.OptionsRepository;
 import com.ih.itinerary_hub_service.options.requests.CreateOptionRequest;
 import com.ih.itinerary_hub_service.options.requests.UpdateOptionRequest;
+import com.ih.itinerary_hub_service.options.responses.OptionDetails;
 import com.ih.itinerary_hub_service.sections.persistence.repository.SectionsRepository;
 import com.ih.itinerary_hub_service.trips.persistence.repository.TripsRepository;
 import com.ih.itinerary_hub_service.users.persistence.repository.UserRepository;
@@ -17,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,7 +46,7 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private OptionsRepository optionsRepository;
 
-    private static final String OPTION_ID = "0d78ebf0-0159-4843-b54b-a696644f26fc";
+    private static final String OPTION_ONE_ID = "0d78ebf0-0159-4843-b54b-a696644f26fc";
     private static final String OPTION_NAME = "Option 1";
     private static final Integer OPTION_ORDER = 1;
 
@@ -106,7 +109,7 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
                             "order": %s
                         }
                     """.formatted(
-                    OPTION_ID,
+                    OPTION_ONE_ID,
                     OPTION_NAME,
                     OPTION_ORDER
             );
@@ -114,7 +117,7 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
             mockMvc.perform(MockMvcRequestBuilders.get(
                     "/v1/sections/{sectionId}/options/{optionId}",
                                             SECTION_ONE,
-                                            OPTION_ID)
+                                    OPTION_ONE_ID)
                             .cookie(guestUserAccessTokenCookie)
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -133,6 +136,50 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
         }
+
+        @Test
+        void getOptions_whenValidRequest_thenReturnOptionList() throws Exception {
+            String expectedJsonResponse = """
+                        [
+                            {
+                                "optionId": "%s",
+                                "optionName": "%s",
+                                "order": %s
+                            },
+                            {
+                                "optionId": "eb7fd861-6dba-4893-a4c8-bac1bd5a47ba",
+                                "optionName": "Option 2",
+                                "order": 2
+                            }
+                        ]
+                    """.formatted(
+                    OPTION_ONE_ID,
+                    OPTION_NAME,
+                    OPTION_ORDER
+            );
+
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                                    "/v1/sections/{sectionId}/options",
+                                    SECTION_ONE)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(MockMvcResultMatchers.content().json(expectedJsonResponse));
+        }
+
+
+        @Test
+        void getOptions_whenNoOptionsFound_thenReturnEmptyList() throws Exception {
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                                    "/v1/sections/{sectionId}/options",
+                                    SECTION_TWO)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(MockMvcResultMatchers.content().json("[]"));
+        }
     }
 
     @Nested
@@ -150,7 +197,7 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
             mockMvc.perform(MockMvcRequestBuilders.put(
                                     "/v1/sections/{sectionId}/options/{optionId}",
                                     SECTION_ONE,
-                                    OPTION_ID)
+                                    OPTION_ONE_ID)
                             .cookie(guestUserAccessTokenCookie)
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -163,12 +210,12 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
                             "optionName": "New Option Name",
                             "order": 5
                         }
-                    """.formatted(OPTION_ID);
+                    """.formatted(OPTION_ONE_ID);
 
             mockMvc.perform(MockMvcRequestBuilders.get(
                                     "/v1/sections/{sectionId}/options/{optionId}",
                                     SECTION_ONE,
-                                    OPTION_ID)
+                                    OPTION_ONE_ID)
                             .cookie(guestUserAccessTokenCookie)
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -181,7 +228,7 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
             mockMvc.perform(MockMvcRequestBuilders.put(
                                     "/v1/sections/{sectionId}/options/{optionId}",
                                     SECTION_ONE,
-                                    OPTION_ID)
+                                    OPTION_ONE_ID)
                             .cookie(guestUserAccessTokenCookie)
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -194,12 +241,12 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
                             "optionName": "%s",
                             "order": 5
                         }
-                    """.formatted(OPTION_ID, OPTION_NAME);
+                    """.formatted(OPTION_ONE_ID, OPTION_NAME);
 
             mockMvc.perform(MockMvcRequestBuilders.get(
                                     "/v1/sections/{sectionId}/options/{optionId}",
                                     SECTION_ONE,
-                                    OPTION_ID)
+                                    OPTION_ONE_ID)
                             .cookie(guestUserAccessTokenCookie)
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -216,7 +263,7 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
             mockMvc.perform(MockMvcRequestBuilders.put(
                                     "/v1/sections/{sectionId}/options/{optionId}",
                                     SECTION_ONE,
-                                    OPTION_ID)
+                                    OPTION_ONE_ID)
                             .cookie(guestUserAccessTokenCookie)
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -229,12 +276,12 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
                             "optionName": "%s",
                             "order": 5
                         }
-                    """.formatted(OPTION_ID, OPTION_NAME);
+                    """.formatted(OPTION_ONE_ID, OPTION_NAME);
 
             mockMvc.perform(MockMvcRequestBuilders.get(
                                     "/v1/sections/{sectionId}/options/{optionId}",
                                     SECTION_ONE,
-                                    OPTION_ID)
+                                    OPTION_ONE_ID)
                             .cookie(guestUserAccessTokenCookie)
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -255,6 +302,56 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
                             .content(objectMapper.writeValueAsString(updateOptionNameRequest)))
                     .andExpect(status().isNotFound());
         }
+
+        @Test
+        void updateOptionOrder_whenValid_shouldIgnoreNames() throws Exception {
+            OptionDetails option1 = new OptionDetails(
+                    UUID.fromString(OPTION_ONE),
+                    "Op", // different name than original
+                    2
+            );
+
+            OptionDetails option2 = new OptionDetails(
+                    UUID.fromString(OPTION_TWO),
+                    "Op",
+                    1
+            );
+
+            List<OptionDetails> details = new ArrayList<>(List.of(option1, option2));
+
+
+            mockMvc.perform(MockMvcRequestBuilders.put(
+                                    "/v1/sections/{sectionId}/options",
+                                    SECTION_ONE)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(details)))
+                    .andExpect(status().isNoContent());
+
+            OptionDetails updatedOption1 = new OptionDetails(
+                    UUID.fromString(OPTION_ONE),
+                    "Option 1", // original name
+                    2
+            );
+
+            OptionDetails updatedOption2 = new OptionDetails(
+                    UUID.fromString(OPTION_TWO),
+                    "Option 2",
+                    1
+            );
+
+            List<OptionDetails> updatedDetails = new ArrayList<>(List.of(updatedOption1, updatedOption2));
+
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                                    "/v1/sections/{sectionId}/options",
+                                    SECTION_ONE)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(updatedDetails)));
+        }
     }
 
     @Nested
@@ -266,7 +363,7 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
             mockMvc.perform(MockMvcRequestBuilders.delete(
                                     "/v1/sections/{sectionId}/options/{optionId}",
                                     SECTION_ONE,
-                                    OPTION_ID)
+                                    OPTION_ONE_ID)
                             .cookie(guestUserAccessTokenCookie)
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
@@ -275,7 +372,7 @@ class OptionsControllerIntegrationTest extends BaseIntegrationTest {
             mockMvc.perform(MockMvcRequestBuilders.get(
                                     "/v1/sections/{sectionId}/options/{optionId}",
                                     SECTION_ONE,
-                                    OPTION_ID)
+                                    OPTION_ONE_ID)
                             .cookie(guestUserAccessTokenCookie)
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))

@@ -12,6 +12,7 @@ import com.ih.itinerary_hub_service.options.requests.CreateOptionRequest;
 import com.ih.itinerary_hub_service.options.requests.UpdateOptionRequest;
 import com.ih.itinerary_hub_service.options.responses.OptionDetails;
 import com.ih.itinerary_hub_service.sections.persistence.entity.Section;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -101,6 +103,20 @@ public class OptionsService {
                     log.error("Option with id {} not found", optionId);
                     return new OptionNotFound("Option with not found");
                 });
+    }
+
+    @Transactional
+    public void updateOptionOrders(UUID sectionId, List<OptionDetails> updatedOptions) {
+        for(OptionDetails optionDetails : updatedOptions) {
+            optionsRepository.updateOrder(optionDetails.optionId(), sectionId, optionDetails.order());
+        }
+    }
+
+    public List<OptionDetails> getOptions(UUID sectionId) {
+        return optionsRepository.findBySectionId(sectionId).stream()
+                .map(this::mapOptionDetails)
+                .sorted(Comparator.comparing(OptionDetails::order))
+                .collect(Collectors.toList());
     }
 
     public List<OptionDTO> findAllOptionDTOs(UUID sectionId) {
