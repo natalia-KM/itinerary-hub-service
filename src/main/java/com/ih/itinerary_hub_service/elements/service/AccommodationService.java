@@ -242,6 +242,7 @@ public class AccommodationService {
                 .optionID(baseElement.getOption().getOptionId())
                 .lastUpdatedAt(baseElement.getLastUpdatedAt())
                 .elementType(baseElement.getElementType())
+                .elementCategory(baseElement.getElementCategory())
                 .link(baseElement.getLink())
                 .price(baseElement.getPrice())
                 .notes(baseElement.getNotes())

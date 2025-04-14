@@ -3,6 +3,7 @@ package com.ih.itinerary_hub_service.elements.controller;
 import com.ih.itinerary_hub_service.elements.exceptions.InvalidElementRequest;
 import com.ih.itinerary_hub_service.elements.model.AccommodationElementDetails;
 import com.ih.itinerary_hub_service.elements.model.ActivityElementDetails;
+import com.ih.itinerary_hub_service.elements.model.BaseElementDetails;
 import com.ih.itinerary_hub_service.elements.model.TransportElementDetails;
 import com.ih.itinerary_hub_service.elements.requests.AccommodationElementRequest;
 import com.ih.itinerary_hub_service.elements.requests.ActivityElementRequest;
@@ -77,6 +78,15 @@ public class ElementsController {
     ) {
         Option option = optionsService.getOption(optionId, sectionId);
         return elementsService.createAccommodationsElement(option, request);
+    }
+
+    @GetMapping("options/{optionId}/elements")
+    @Operation(summary = "${elements.getTransport.summary}")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Element retrieved")})
+    public List<BaseElementDetails> getElements(
+            @PathVariable UUID optionId
+    ) {
+        return elementsService.getElementsByIds(optionId);
     }
 
     @GetMapping("sections/{sectionId}/options/{optionId}/elements/{baseElementId}/transport")

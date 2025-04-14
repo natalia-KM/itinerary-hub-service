@@ -57,6 +57,7 @@ class ElementsServiceTest {
             BaseElementRequest base = new BaseElementRequest(
                     type,
                     null,
+                    null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
                     ElementStatus.PENDING
@@ -87,6 +88,7 @@ class ElementsServiceTest {
             BaseElementRequest base = new BaseElementRequest(
                     type,
                     null,
+                    null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
                     ElementStatus.PENDING
@@ -116,6 +118,7 @@ class ElementsServiceTest {
         void shouldThrowExceptionWhenRequestIsInvalid_accomm(Integer checkInOrder, Integer checkOutOrder, ElementType type) {
             BaseElementRequest base = new BaseElementRequest(
                     type,
+                    null,
                     null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
@@ -206,6 +209,7 @@ class ElementsServiceTest {
             BaseElementRequest base = new BaseElementRequest(
                     invalidType,
                     null,
+                    null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
                     ElementStatus.PENDING
@@ -232,6 +236,7 @@ class ElementsServiceTest {
             BaseElementRequest base = new BaseElementRequest(
                     invalidType,
                     null,
+                    null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
                     ElementStatus.PENDING
@@ -256,6 +261,7 @@ class ElementsServiceTest {
 
             BaseElementRequest base = new BaseElementRequest(
                     invalidType,
+                    null,
                     null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
@@ -355,7 +361,8 @@ class ElementsServiceTest {
                 .destinationPlace("Destination")
                 .originDateTime(LocalDateTime.now())
                 .destinationDateTime(LocalDateTime.now().plusDays(1))
-                .provider(null)
+                .originProvider(null)
+                .destinationProvider(null)
                 .build();
     }
 }

@@ -264,6 +264,7 @@ public class ElementsService {
                 option,
                 dateTime,
                 type,
+                baseRequest.getElementCategory(),
                 baseRequest.getLink(),
                 baseRequest.getPrice(),
                 baseRequest.getNotes(),

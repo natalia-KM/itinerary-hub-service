@@ -72,6 +72,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
 
             BaseElementRequest base = new BaseElementRequest(
                     ElementType.TRANSPORT,
+                    "Flight",
                     null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
@@ -102,6 +103,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     .andExpect(jsonPath("$.optionID").exists())
                     .andExpect(jsonPath("$.lastUpdatedAt").exists())
                     .andExpect(jsonPath("$.elementType").value(ElementType.TRANSPORT.toString()))
+                    .andExpect(jsonPath("$.elementCategory").value("Flight"))
                     .andExpect(jsonPath("$.link").isEmpty())
                     .andExpect(jsonPath("$.price").value(23.45))
                     .andExpect(jsonPath("$.notes").value("Notes"))
@@ -111,7 +113,8 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     .andExpect(jsonPath("$.destinationPlace").value(destinationPlace))
                     .andExpect(jsonPath("$.originDateTime").value(originTime.format(formatter)))
                     .andExpect(jsonPath("$.destinationDateTime").value(destinationTime.format(formatter)))
-                    .andExpect(jsonPath("$.provider").isEmpty());
+                    .andExpect(jsonPath("$.originProvider").isEmpty())
+                    .andExpect(jsonPath("$.destinationProvider").isEmpty());
         }
 
         @Test
@@ -124,6 +127,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
 
             BaseElementRequest base = new BaseElementRequest(
                     ElementType.ACTIVITY,
+                    "Escape room",
                     link,
                     BigDecimal.valueOf(23.45),
                     "Notes",
@@ -153,6 +157,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     .andExpect(jsonPath("$.optionID").exists())
                     .andExpect(jsonPath("$.lastUpdatedAt").exists())
                     .andExpect(jsonPath("$.elementType").value(ElementType.ACTIVITY.toString()))
+                    .andExpect(jsonPath("$.elementCategory").value("Escape room"))
                     .andExpect(jsonPath("$.link").value(link))
                     .andExpect(jsonPath("$.price").value(23.45))
                     .andExpect(jsonPath("$.notes").value("Notes"))
@@ -174,6 +179,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
 
             BaseElementRequest base = new BaseElementRequest(
                     ElementType.ACCOMMODATION,
+                    "AirBnb",
                     link,
                     null,
                     null,
@@ -195,6 +201,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     [
                       {
                         "elementType": "ACCOMMODATION",
+                        "elementCategory": "AirBnb",
                         "link": "https://some-link.co",
                         "price": null,
                         "notes": null,
@@ -207,6 +214,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                       },
                       {
                         "elementType": "ACCOMMODATION",
+                        "elementCategory": "AirBnb",
                         "link": "https://some-link.co",
                         "price": null,
                         "notes": null,
@@ -259,7 +267,8 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                           "destinationPlace": "Paris",
                           "originDateTime": "2022-05-12T00:00:00",
                           "destinationDateTime": "2022-05-15T12:00:00",
-                          "provider": null
+                          "originProvider": null,
+                          "destinationProvider": "Ryanair"
                         }
                     """;
 
@@ -430,6 +439,76 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Nested
+    class GetElements {
+        @Test
+        void shouldGetAllElementsInAnOption() throws Exception {
+            String expectedResponse = """
+                    [
+                      {
+                        "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
+                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                        "lastUpdatedAt": "2022-05-15T00:00:00",
+                        "elementType": "ACCOMMODATION",
+                        "elementCategory": "Hotel",
+                        "link": "https://book-hotel.ih/",
+                        "price": null,
+                        "notes": null,
+                        "status": null,
+                        "order": 1,
+                        "place": "Hotel Name",
+                        "location": "Paris, Some Street",
+                        "accommodationType": "CHECK_IN",
+                        "dateTime": "2022-05-12T12:30:00"
+                      },
+                      {
+                        "baseElementID": "4e52ae05-06dc-423f-b86f-51a00cb8c452",
+                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                        "lastUpdatedAt": "2022-05-12T00:00:00",
+                        "elementType": "TRANSPORT",
+                        "elementCategory": "Flight",
+                        "link": null,
+                        "price": 23.45,
+                        "notes": "Notes",
+                        "status": "PENDING",
+                        "order": 2,
+                        "originPlace": "London Heathrow",
+                        "destinationPlace": "Paris",
+                        "originDateTime": "2022-05-12T00:00:00",
+                        "destinationDateTime": "2022-05-15T12:00:00",
+                        "originProvider": null,
+                        "destinationProvider": "Ryanair"
+                      },
+                      {
+                        "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
+                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                        "lastUpdatedAt": "2022-05-15T00:00:00",
+                        "elementType": "ACCOMMODATION",
+                        "elementCategory": "Hotel",
+                        "link": "https://book-hotel.ih/",
+                        "price": null,
+                        "notes": null,
+                        "status": null,
+                        "order": 3,
+                        "place": "Hotel Name",
+                        "location": "Paris, Some Street",
+                        "accommodationType": "CHECK_OUT",
+                        "dateTime": "2022-05-13T14:00:00"
+                      }
+                    ]
+                    """;
+
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                                    "/v1/options/{optionId}/elements",
+                                    OPTION_ONE)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT));
+        }
+    }
+
+    @Nested
     class UpdateElement {
 
         @Test
@@ -451,7 +530,8 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     .baseElementRequest(base)
                     .originPlace(newOriginPlace)
                     .destinationDateTime(newDestinationTime)
-                    .provider(newProvider)
+                    .originProvider(newProvider)
+                    .destinationProvider(newProvider)
                     .build();
 
             String expectedResponse = """
@@ -466,13 +546,15 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                         "destinationPlace": "Paris",
                         "originDateTime": "2022-05-12T00:00:00",
                         "destinationDateTime": "%s",
-                        "provider": "%s"
+                        "originProvider": "%s",
+                        "destinationProvider": "%s"
                       }
                     """.formatted(
                             newLink,
                             newPrice,
                             newOriginPlace,
                             newDestinationTime.format(formatter),
+                            newProvider,
                             newProvider
                     );
 

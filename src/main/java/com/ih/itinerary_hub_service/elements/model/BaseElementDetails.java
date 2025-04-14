@@ -16,6 +16,7 @@ public abstract class BaseElementDetails {
     private UUID optionID;
     private LocalDateTime lastUpdatedAt;
     private ElementType elementType;
+    private String elementCategory;
     private String link;
     private BigDecimal price;
     private String notes;
@@ -29,6 +30,7 @@ public abstract class BaseElementDetails {
         this.optionID = builder.optionID;
         this.lastUpdatedAt = builder.lastUpdatedAt;
         this.elementType = builder.elementType;
+        this.elementCategory = builder.elementCategory;
         this.link = builder.link;
         this.price = builder.price;
         this.notes = builder.notes;
@@ -41,6 +43,7 @@ public abstract class BaseElementDetails {
         private UUID optionID;
         private LocalDateTime lastUpdatedAt;
         private ElementType elementType;
+        private String elementCategory;
         private String link;
         private BigDecimal price;
         private String notes;
@@ -59,6 +62,11 @@ public abstract class BaseElementDetails {
 
         public T lastUpdatedAt(LocalDateTime lastUpdatedAt) {
             this.lastUpdatedAt = lastUpdatedAt;
+            return self();
+        }
+
+        public T elementCategory(String elementCategory) {
+            this.elementCategory = elementCategory;
             return self();
         }
 

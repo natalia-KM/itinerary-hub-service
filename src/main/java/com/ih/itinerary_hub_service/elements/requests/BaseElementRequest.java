@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 @SuperBuilder
 public class BaseElementRequest {
     private ElementType elementType;
+    private String elementCategory;
     private String link;
     private BigDecimal price;
     private String notes;

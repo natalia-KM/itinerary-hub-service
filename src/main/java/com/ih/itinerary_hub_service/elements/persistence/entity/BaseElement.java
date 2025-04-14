@@ -36,6 +36,9 @@ public class BaseElement {
     @Column(name = "element_type", nullable = false)
     private ElementType elementType;
 
+    @Column(name = "element_category", nullable = false)
+    private String elementCategory;
+
     @Column(name = "link")
     private String link;
 

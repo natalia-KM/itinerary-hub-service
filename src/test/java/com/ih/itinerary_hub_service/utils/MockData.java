@@ -84,6 +84,7 @@ public class MockData {
                 null,
                 null,
                 null,
+                null,
                 null
         );
     }
@@ -91,6 +92,7 @@ public class MockData {
     public static BaseElementRequest getNewBaseElementRequest(ElementType type) {
         return new BaseElementRequest(
                 type,
+                null,
                 null,
                 BigDecimal.valueOf(23.45),
                 "Notes",

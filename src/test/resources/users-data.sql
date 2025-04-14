@@ -24,15 +24,15 @@ INSERT INTO dev.options (option_id, section_id, option_name, option_order)
 VALUES ('eb7fd861-6dba-4893-a4c8-bac1bd5a47ba', 'a3c84e94-157b-436f-9e77-2b461c7c3bf2', 'Option 2',2);
 
 --Transport element for option 1
-INSERT INTO dev.base_elements (base_element_id, option_id, last_updated_at, element_type, link, price, notes, element_status)
-VALUES ('4e52ae05-06dc-423f-b86f-51a00cb8c452', '0d78ebf0-0159-4843-b54b-a696644f26fc', '2022-05-12 00:00:00','TRANSPORT', null, 23.45, 'Notes', 'PENDING');
+INSERT INTO dev.base_elements (base_element_id, option_id, last_updated_at, element_type, element_category, link, price, notes, element_status)
+VALUES ('4e52ae05-06dc-423f-b86f-51a00cb8c452', '0d78ebf0-0159-4843-b54b-a696644f26fc', '2022-05-12 00:00:00','TRANSPORT', 'Flight', null, 23.45, 'Notes', 'PENDING');
 
-INSERT INTO dev.transport_elements (element_id, base_element_id, origin_place, origin_datetime, destination_place, destination_datetime, provider, element_order)
-VALUES ('674a2a9c-2dc5-4d00-a9ee-e4f051a17194', '4e52ae05-06dc-423f-b86f-51a00cb8c452', 'London Heathrow','2022-05-12 00:00:00', 'Paris', '2022-05-15 12:00:00', null, 2);
+INSERT INTO dev.transport_elements (element_id, base_element_id, origin_place, origin_datetime, destination_place, destination_datetime, origin_provider, destination_provider, element_order)
+VALUES ('674a2a9c-2dc5-4d00-a9ee-e4f051a17194', '4e52ae05-06dc-423f-b86f-51a00cb8c452', 'London Heathrow','2022-05-12 00:00:00', 'Paris', '2022-05-15 12:00:00', null, 'Ryanair',2);
 
 --Accommodation elements for option 1
-INSERT INTO dev.base_elements (base_element_id, option_id, last_updated_at, element_type, link, price, notes, element_status)
-VALUES ('e4f56f0d-01ab-4ddb-be38-486ebefc4ede', '0d78ebf0-0159-4843-b54b-a696644f26fc', '2022-05-15 00:00:00','ACCOMMODATION', 'https://book-hotel.ih/', null, null, null);
+INSERT INTO dev.base_elements (base_element_id, option_id, last_updated_at, element_type, element_category, link, price, notes, element_status)
+VALUES ('e4f56f0d-01ab-4ddb-be38-486ebefc4ede', '0d78ebf0-0159-4843-b54b-a696644f26fc', '2022-05-15 00:00:00','ACCOMMODATION', 'Hotel', 'https://book-hotel.ih/', null, null, null);
 
 INSERT INTO dev.accommodation_elements (element_id, base_element_id, place, location)
 VALUES ('4fc652e6-0fdc-4d69-8a3a-61ca6ab6ddb1', 'e4f56f0d-01ab-4ddb-be38-486ebefc4ede', 'Hotel Name','Paris, Some Street');
@@ -44,8 +44,8 @@ INSERT INTO dev.accommodation_events (event_id, accommodation_id, type, datetime
 VALUES ('f8876598-c138-4bd1-8055-5294bda159be', '4fc652e6-0fdc-4d69-8a3a-61ca6ab6ddb1', 'CHECK_OUT','2022-05-13 14:00:00', 3);
 
 --Activity element for option 2
-INSERT INTO dev.base_elements (base_element_id, option_id, last_updated_at, element_type, link, price, notes, element_status)
-VALUES ('b647b387-31ad-4ffb-a9d2-91551d4b3138', 'eb7fd861-6dba-4893-a4c8-bac1bd5a47ba', '2022-05-20 22:00:00','ACTIVITY', null, 1000.00, null, 'BOOKED');
+INSERT INTO dev.base_elements (base_element_id, option_id, last_updated_at, element_type, element_category, link, price, notes, element_status)
+VALUES ('b647b387-31ad-4ffb-a9d2-91551d4b3138', 'eb7fd861-6dba-4893-a4c8-bac1bd5a47ba', '2022-05-20 22:00:00','ACTIVITY', 'Restaurant',null, 1000.00, null, 'BOOKED');
 
 INSERT INTO dev.activity_elements (element_id, base_element_id, activity_name, location, starts_at, duration, element_order)
 VALUES ('82c24ee6-075f-4d8c-913d-1d06f325fd43', 'b647b387-31ad-4ffb-a9d2-91551d4b3138', 'Escape Room','Paris, Street 2', '2022-05-15 13:00:00', '120', 1);

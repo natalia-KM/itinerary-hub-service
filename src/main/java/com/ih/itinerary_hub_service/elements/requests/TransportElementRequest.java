@@ -16,6 +16,7 @@ public class TransportElementRequest extends CreateElementRequest {
     private String destinationPlace;
     private LocalDateTime originDateTime;
     private LocalDateTime destinationDateTime;
-    private String provider;
+    private String originProvider;
+    private String destinationProvider;
     private Integer order;
 }

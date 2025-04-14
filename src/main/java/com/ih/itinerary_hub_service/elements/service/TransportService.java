@@ -33,7 +33,8 @@ public class TransportService {
                 request.getOriginDateTime(),
                 request.getDestinationPlace(),
                 request.getDestinationDateTime(),
-                request.getProvider(),
+                request.getOriginProvider(),
+                request.getDestinationProvider(),
                 request.getOrder()
         );
 
@@ -79,11 +80,19 @@ public class TransportService {
             transportElement.setDestinationDateTime(request.getDestinationDateTime());
         }
 
-        if (request.getProvider() != null && !request.getProvider().isEmpty()) {
-            if(request.getProvider().isBlank()) {
-                transportElement.setProvider(null);
+        if (request.getOriginProvider() != null && !request.getOriginProvider().isEmpty()) {
+            if(request.getOriginProvider().isBlank()) {
+                transportElement.setOriginProvider(null);
             } else {
-                transportElement.setProvider(request.getProvider());
+                transportElement.setOriginProvider(request.getOriginProvider());
+            }
+        }
+
+        if (request.getDestinationProvider() != null && !request.getDestinationProvider().isEmpty()) {
+            if(request.getDestinationProvider().isBlank()) {
+                transportElement.setDestinationProvider(null);
+            } else {
+                transportElement.setDestinationProvider(request.getDestinationProvider());
             }
         }
 
@@ -129,7 +138,8 @@ public class TransportService {
                 .destinationPlace(element.getDestinationPlace())
                 .originDateTime(element.getOriginDateTime())
                 .destinationDateTime(element.getDestinationDateTime())
-                .provider(element.getProvider())
+                .originProvider(element.getOriginProvider())
+                .destinationProvider(element.getDestinationProvider())
                 .build();
     }
 
@@ -145,6 +155,7 @@ public class TransportService {
                 .optionID(baseElement.getOption().getOptionId())
                 .lastUpdatedAt(baseElement.getLastUpdatedAt())
                 .elementType(baseElement.getElementType())
+                .elementCategory(baseElement.getElementCategory())
                 .link(baseElement.getLink())
                 .price(baseElement.getPrice())
                 .notes(baseElement.getNotes())

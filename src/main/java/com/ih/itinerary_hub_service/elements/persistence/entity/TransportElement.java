@@ -37,8 +37,11 @@ public class TransportElement {
     @Column(name = "destination_datetime", nullable = false)
     private LocalDateTime destinationDateTime;
 
-    @Column(name = "provider", length = 100)
-    private String provider;
+    @Column(name = "origin_provider", length = 100)
+    private String originProvider;
+
+    @Column(name = "destination_provider", length = 100)
+    private String destinationProvider;
 
     @Column(name = "element_order", nullable = false)
     private Integer elementOrder;
