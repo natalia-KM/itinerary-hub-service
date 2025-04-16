@@ -133,8 +133,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                           "destinationPlace": "destination",
                           "originDateTime": "2025-03-22T00:00:00",
                           "destinationDateTime": "2025-04-25T00:00:00",
-                          "originProvider": null,
-                          "destinationProvider": null
+                          "provider": null
                         }
                     """;
 
@@ -167,7 +166,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     BigDecimal.valueOf(23.45),
                     "Notes",
                     ElementStatus.PENDING,
-                    List.of()
+                    null
             );
             ActivityElementRequest request = ActivityElementRequest.builder()
                     .baseElementRequest(base)
@@ -352,8 +351,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                           "destinationPlace": "Paris",
                           "originDateTime": "2022-05-12T00:00:00",
                           "destinationDateTime": "2022-05-15T12:00:00",
-                          "originProvider": null,
-                          "destinationProvider": "Ryanair"
+                          "provider": null
                         }
                     """;
 
@@ -617,8 +615,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                            "destinationPlace": "Paris",
                            "originDateTime": "2022-05-12T00:00:00",
                            "destinationDateTime": "2022-05-15T12:00:00",
-                           "originProvider": null,
-                           "destinationProvider": "Ryanair"
+                           "provider": null
                          },
                          {
                            "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
@@ -687,8 +684,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     .baseElementRequest(base)
                     .originPlace(newOriginPlace)
                     .destinationDateTime(newDestinationTime)
-                    .originProvider(newProvider)
-                    .destinationProvider(newProvider)
+                    .provider(newProvider)
                     .build();
 
             String expectedResponse = """
@@ -732,15 +728,13 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                         "destinationPlace": "Paris",
                         "originDateTime": "2022-05-12T00:00:00",
                         "destinationDateTime": "%s",
-                        "originProvider": "%s",
-                        "destinationProvider": "%s"
+                        "provider": "%s"
                       }
                     """.formatted(
                     newLink,
                     newPrice,
                     newOriginPlace,
                     newDestinationTime.format(formatter),
-                    newProvider,
                     newProvider
             );
 

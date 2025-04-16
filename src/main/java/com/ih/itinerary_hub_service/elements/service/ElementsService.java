@@ -262,6 +262,11 @@ public class ElementsService {
 
     private List<PassengerDetails> assignPassengers(BaseElement baseElement, BaseElementRequest baseRequest) {
         List<UUID> passengerIds = baseRequest.getPassengerIds();
+
+        if(passengerIds == null || passengerIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<PassengerDetails> passengerDetails = new ArrayList<>();
         for(UUID passengerId : passengerIds) {
             passengersService.assignPassengerToElement(passengerId, baseElement);

@@ -375,8 +375,7 @@ class ElementsServiceTest {
                 .destinationPlace("Destination")
                 .originDateTime(LocalDateTime.now())
                 .destinationDateTime(LocalDateTime.now().plusDays(1))
-                .originProvider(null)
-                .destinationProvider(null)
+                .provider(null)
                 .build();
     }
 }

@@ -406,8 +406,7 @@ class TripsControllerIntegrationTest extends BaseIntegrationTest {
                                        "destinationPlace": "Paris",
                                        "originDateTime": "2022-05-12T00:00:00",
                                        "destinationDateTime": "2022-05-15T12:00:00",
-                                       "originProvider": null,
-                                       "destinationProvider": "Ryanair"
+                                       "provider": null
                                      },
                                      {
                                        "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",

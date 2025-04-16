@@ -27,8 +27,8 @@ VALUES ('eb7fd861-6dba-4893-a4c8-bac1bd5a47ba', 'a3c84e94-157b-436f-9e77-2b461c7
 INSERT INTO dev.base_elements (base_element_id, option_id, last_updated_at, element_type, element_category, link, price, notes, element_status)
 VALUES ('4e52ae05-06dc-423f-b86f-51a00cb8c452', '0d78ebf0-0159-4843-b54b-a696644f26fc', '2022-05-12 00:00:00','TRANSPORT', 'Flight', null, 23.45, 'Notes', 'PENDING');
 
-INSERT INTO dev.transport_elements (element_id, base_element_id, origin_place, origin_datetime, destination_place, destination_datetime, origin_provider, destination_provider, element_order)
-VALUES ('674a2a9c-2dc5-4d00-a9ee-e4f051a17194', '4e52ae05-06dc-423f-b86f-51a00cb8c452', 'London Heathrow','2022-05-12 00:00:00', 'Paris', '2022-05-15 12:00:00', null, 'Ryanair',2);
+INSERT INTO dev.transport_elements (element_id, base_element_id, origin_place, origin_datetime, destination_place, destination_datetime, provider, element_order)
+VALUES ('674a2a9c-2dc5-4d00-a9ee-e4f051a17194', '4e52ae05-06dc-423f-b86f-51a00cb8c452', 'London Heathrow','2022-05-12 00:00:00', 'Paris', '2022-05-15 12:00:00', null, 2);
 
 --Accommodation elements for option 1
 INSERT INTO dev.base_elements (base_element_id, option_id, last_updated_at, element_type, element_category, link, price, notes, element_status)

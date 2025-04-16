@@ -12,8 +12,7 @@ public class TransportElementDetails extends BaseElementDetails {
     private String destinationPlace;
     private LocalDateTime originDateTime;
     private LocalDateTime destinationDateTime;
-    private String originProvider;
-    private String destinationProvider;
+    private String provider;
 
     private TransportElementDetails(Builder builder) {
         super(builder);
@@ -21,8 +20,7 @@ public class TransportElementDetails extends BaseElementDetails {
         this.destinationPlace = builder.destinationPlace;
         this.originDateTime = builder.originDateTime;
         this.destinationDateTime = builder.destinationDateTime;
-        this.originProvider = builder.originProvider;
-        this.destinationProvider = builder.destinationProvider;
+        this.provider = builder.provider;
     }
 
     public static class Builder extends BaseElementDetailsBuilder<Builder> {
@@ -30,8 +28,7 @@ public class TransportElementDetails extends BaseElementDetails {
         private String destinationPlace;
         private LocalDateTime originDateTime;
         private LocalDateTime destinationDateTime;
-        private String originProvider;
-        private String destinationProvider;
+        private String provider;
 
         public Builder originPlace(String originPlace) {
             this.originPlace = originPlace;
@@ -53,13 +50,8 @@ public class TransportElementDetails extends BaseElementDetails {
             return this;
         }
 
-        public Builder originProvider(String originProvider) {
-            this.originProvider = originProvider;
-            return this;
-        }
-
-        public Builder destinationProvider(String destinationProvider) {
-            this.destinationProvider = destinationProvider;
+        public Builder provider(String provider) {
+            this.provider = provider;
             return this;
         }
 

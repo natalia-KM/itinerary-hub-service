@@ -55,7 +55,6 @@ class TransportServiceTest {
                 "dest",
                 LocalDateTime.now().plusDays(1),
                 null,
-                null,
                 1
         );
         when(transportRepository.getTransportElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(transportElement));
@@ -76,7 +75,6 @@ class TransportServiceTest {
                 "dest",
                 LocalDateTime.now().plusDays(1),
                 "Ryanair",
-                "WizzAir",
                 1
         );
 
@@ -93,8 +91,7 @@ class TransportServiceTest {
         assertNotNull(result);
         assertEquals(transportElement.getOriginPlace(), result.getOriginPlace());
         assertEquals(transportElement.getDestinationPlace(), result.getDestinationPlace());
-        assertEquals(transportElement.getOriginProvider(), result.getOriginProvider());
-        assertEquals(transportElement.getDestinationProvider(), result.getDestinationProvider());
+        assertEquals(transportElement.getProvider(), result.getProvider());
         assertEquals(transportElement.getOriginDateTime(), result.getOriginDateTime());
         assertEquals(transportElement.getDestinationDateTime(), result.getDestinationDateTime());
         assertEquals(transportElement.getElementOrder(), result.getOrder());
@@ -112,7 +109,6 @@ class TransportServiceTest {
                 "dest",
                 LocalDateTime.now().plusDays(1),
                 "provider",
-                null,
                 1
         );
 
@@ -129,8 +125,7 @@ class TransportServiceTest {
         TransportElementDetails result = transportService.updateElement(request, baseElement, List.of());
 
         assertNotNull(result);
-        assertEquals(transportElement.getOriginPlace(), result.getOriginPlace());
-        assertEquals(transportElement.getDestinationPlace(), result.getDestinationPlace());
+        assertEquals(transportElement.getProvider(), result.getProvider());
     }
 
     @Test
@@ -145,7 +140,6 @@ class TransportServiceTest {
                 "dest",
                 LocalDateTime.now().plusDays(1),
                 "provider",
-                null,
                 1
         );
 
@@ -153,7 +147,7 @@ class TransportServiceTest {
 
         TransportElementRequest request = TransportElementRequest.builder()
                 .baseElementRequest(base)
-                .originProvider(" ")
+                .provider(" ")
                 .build();
 
         when(transportRepository.getTransportElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(transportElement));
@@ -161,7 +155,7 @@ class TransportServiceTest {
         TransportElementDetails result = transportService.updateElement(request, baseElement, List.of());
 
         assertNotNull(result);
-        assertNull(transportElement.getOriginProvider());
+        assertNull(transportElement.getProvider());
     }
 
     @Test
@@ -176,7 +170,6 @@ class TransportServiceTest {
                 "dest",
                 LocalDateTime.now().plusDays(1),
                 "provider",
-                null,
                 1
         );
 
@@ -188,8 +181,7 @@ class TransportServiceTest {
                 .destinationPlace("new destination")
                 .originDateTime(LocalDateTime.now().plusDays(5))
                 .destinationDateTime(LocalDateTime.now().plusDays(10))
-                .originProvider("origin provider")
-                .destinationProvider("dest provider")
+                .provider("provider")
                 .order(2)
                 .build();
 
@@ -200,8 +192,7 @@ class TransportServiceTest {
         assertNotNull(result);
         assertEquals(request.getOriginPlace(), result.getOriginPlace());
         assertEquals(request.getDestinationPlace(), result.getDestinationPlace());
-        assertEquals(request.getOriginProvider(), result.getOriginProvider());
-        assertEquals(request.getDestinationProvider(), result.getDestinationProvider());
+        assertEquals(request.getProvider(), result.getProvider());
         assertEquals(request.getOriginDateTime(), result.getOriginDateTime());
         assertEquals(request.getDestinationDateTime(), result.getDestinationDateTime());
         assertEquals(request.getOrder(), result.getOrder());
@@ -219,7 +210,6 @@ class TransportServiceTest {
                 "dest",
                 LocalDateTime.now().plusDays(1),
                 "provider",
-                null,
                 1
         );
 
@@ -246,7 +236,6 @@ class TransportServiceTest {
                 LocalDateTime.now(),
                 "dest",
                 LocalDateTime.now().plusDays(1),
-                "provider",
                 null,
                 1
         );

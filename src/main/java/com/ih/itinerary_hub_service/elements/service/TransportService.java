@@ -35,8 +35,7 @@ public class TransportService {
                 request.getOriginDateTime(),
                 request.getDestinationPlace(),
                 request.getDestinationDateTime(),
-                request.getOriginProvider(),
-                request.getDestinationProvider(),
+                request.getProvider(),
                 request.getOrder()
         );
 
@@ -82,19 +81,11 @@ public class TransportService {
             transportElement.setDestinationDateTime(request.getDestinationDateTime());
         }
 
-        if (request.getOriginProvider() != null && !request.getOriginProvider().isEmpty()) {
-            if(request.getOriginProvider().isBlank()) {
-                transportElement.setOriginProvider(null);
+        if (request.getProvider() != null && !request.getProvider().isEmpty()) {
+            if(request.getProvider().isBlank()) {
+                transportElement.setProvider(null);
             } else {
-                transportElement.setOriginProvider(request.getOriginProvider());
-            }
-        }
-
-        if (request.getDestinationProvider() != null && !request.getDestinationProvider().isEmpty()) {
-            if(request.getDestinationProvider().isBlank()) {
-                transportElement.setDestinationProvider(null);
-            } else {
-                transportElement.setDestinationProvider(request.getDestinationProvider());
+                transportElement.setProvider(request.getProvider());
             }
         }
 
@@ -140,8 +131,7 @@ public class TransportService {
                 .destinationPlace(element.getDestinationPlace())
                 .originDateTime(element.getOriginDateTime())
                 .destinationDateTime(element.getDestinationDateTime())
-                .originProvider(element.getOriginProvider())
-                .destinationProvider(element.getDestinationProvider())
+                .provider(element.getProvider())
                 .build();
     }
 
