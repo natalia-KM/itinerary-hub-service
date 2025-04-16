@@ -40,6 +40,12 @@ public class BaseIntegrationTest {
     protected static final String ACTIVITY_ELEMENT = "b647b387-31ad-4ffb-a9d2-91551d4b3138";
     protected static final String ACCOMMODATION_ELEMENT = "e4f56f0d-01ab-4ddb-be38-486ebefc4ede";
 
+    protected static final String PASSENGER_ONE = "0e85075f-be86-4b31-96ec-08feea54fb0e";
+    protected static final String PASSENGER_TWO = "3c2c02d3-8a7f-4a1c-94bb-4cce3e9b90c1";
+    protected static final String PASSENGER_THREE = "e0a5409f-6b9e-4f2c-8418-a9275aa4ae52";
+    protected static final String PASSENGER_FOUR = "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f";
+    protected static final String PASSENGER_FIVE = "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57";
+
     private static final String SECRET_KEY = "this-is-a-very-long-key-only-for-testing-spring-pls-stop-complaining";
     protected static final SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 

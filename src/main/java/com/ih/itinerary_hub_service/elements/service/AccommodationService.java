@@ -12,6 +12,7 @@ import com.ih.itinerary_hub_service.elements.requests.AccommodationElementReques
 import com.ih.itinerary_hub_service.elements.requests.AccommodationEventRequest;
 import com.ih.itinerary_hub_service.elements.types.AccommodationType;
 import com.ih.itinerary_hub_service.exceptions.DbFailure;
+import com.ih.itinerary_hub_service.passengers.responses.PassengerDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class AccommodationService {
         this.accommodationEventRepository = accommodationEventRepository;
     }
 
-    public List<AccommodationElementDetails> createElements(AccommodationElementRequest request, BaseElement baseElement) {
+    public List<AccommodationElementDetails> createElements(AccommodationElementRequest request, BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
         UUID elementId = UUID.randomUUID();
 
         AccommodationElement accommodationElement = new AccommodationElement(
@@ -75,7 +76,7 @@ public class AccommodationService {
             throw new DbFailure(e.getMessage());
         }
 
-        return mapAccommodationElementDetails(accommodationElement, List.of(checkIn, checkOut), baseElement);
+        return mapAccommodationElementDetails(accommodationElement, List.of(checkIn, checkOut), baseElement, passengerDetailsList);
     }
 
     public void updateElementOrder(Integer order, UUID baseElementID, Optional<AccommodationType> type) {
@@ -98,7 +99,7 @@ public class AccommodationService {
         }
     }
 
-    public List<AccommodationElementDetails> updateAccommodationElements(AccommodationElementRequest request, BaseElement baseElement) {
+    public List<AccommodationElementDetails> updateAccommodationElements(AccommodationElementRequest request, BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
         AccommodationElement accommodationElement = getElementByBaseId(baseElement.getBaseElementId());
 
         if (request.getPlace() != null && !request.getPlace().isBlank()) {
@@ -154,7 +155,7 @@ public class AccommodationService {
         }
 
         List<AccommodationEvent> updatedEvent = Arrays.asList(existingCheckIn, existingCheckOut);
-        return mapAccommodationElementDetails(accommodationElement, updatedEvent, baseElement);
+        return mapAccommodationElementDetails(accommodationElement, updatedEvent, baseElement, passengerDetailsList);
     }
 
     public void deleteElement(UUID baseElementID) {
@@ -172,18 +173,18 @@ public class AccommodationService {
     }
 
 
-    public List<AccommodationElementDetails> getAccommodationDetailsPair(BaseElement baseElement) {
+    public List<AccommodationElementDetails> getAccommodationDetailsPair(BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
         AccommodationElement accommodationElement = getElementByBaseId(baseElement.getBaseElementId());
         List<AccommodationEvent> accommodationEvents = getAccommodationEventsPair(baseElement.getBaseElementId(), accommodationElement.getElementId());
 
-        return mapAccommodationElementDetails(accommodationElement, accommodationEvents, baseElement);
+        return mapAccommodationElementDetails(accommodationElement, accommodationEvents, baseElement, passengerDetailsList);
     }
 
-    public AccommodationElementDetails getSingleAccommodationDetailsElement(BaseElement baseElement, AccommodationType accommodationType) {
+    public AccommodationElementDetails getSingleAccommodationDetailsElement(BaseElement baseElement, AccommodationType accommodationType, List<PassengerDetails> passengerDetailsList) {
         AccommodationElement accommodationElement = getElementByBaseId(baseElement.getBaseElementId());
         AccommodationEvent event = getSingleAccEvent(accommodationElement, accommodationType);
 
-        return mapSingleAccElementDetails(accommodationElement, event, baseElement);
+        return mapSingleAccElementDetails(accommodationElement, event, baseElement, passengerDetailsList);
     }
 
     private AccommodationEvent getSingleAccEvent(AccommodationElement accommodationElement, AccommodationType accommodationType) {
@@ -214,19 +215,19 @@ public class AccommodationService {
     }
 
 
-    private static List<AccommodationElementDetails> mapAccommodationElementDetails(AccommodationElement element, List<AccommodationEvent> events, BaseElement baseElement) {
+    private static List<AccommodationElementDetails> mapAccommodationElementDetails(AccommodationElement element, List<AccommodationEvent> events, BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
         List<AccommodationElementDetails> accommodationElementDetails = new ArrayList<>();
 
         for(AccommodationEvent accommodationEvent : events) {
-            AccommodationElementDetails elementDetails = mapSingleAccElementDetails(element, accommodationEvent, baseElement);
+            AccommodationElementDetails elementDetails = mapSingleAccElementDetails(element, accommodationEvent, baseElement, passengerDetailsList);
             accommodationElementDetails.add(elementDetails);
         }
 
         return accommodationElementDetails;
     }
 
-    private static AccommodationElementDetails mapSingleAccElementDetails(AccommodationElement element, AccommodationEvent accommodationEvent, BaseElement baseElement) {
-        AccommodationElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, accommodationEvent.getElementOrder());
+    private static AccommodationElementDetails mapSingleAccElementDetails(AccommodationElement element, AccommodationEvent accommodationEvent, BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
+        AccommodationElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, accommodationEvent.getElementOrder(), passengerDetailsList);
 
         return baseElementBuild
                         .place(element.getPlace())
@@ -236,7 +237,7 @@ public class AccommodationService {
                         .build();
     }
 
-    private static AccommodationElementDetails.Builder getBaseElementBuild(BaseElement baseElement, Integer order) {
+    private static AccommodationElementDetails.Builder getBaseElementBuild(BaseElement baseElement, Integer order, List<PassengerDetails> passengerDetailsList) {
         return new AccommodationElementDetails.Builder()
                 .baseElementID(baseElement.getBaseElementId())
                 .optionID(baseElement.getOption().getOptionId())
@@ -247,6 +248,7 @@ public class AccommodationService {
                 .price(baseElement.getPrice())
                 .notes(baseElement.getNotes())
                 .status(baseElement.getStatus())
+                .passengerList(passengerDetailsList)
                 .order(order);
     }
 }

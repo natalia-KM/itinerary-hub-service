@@ -2,11 +2,13 @@ package com.ih.itinerary_hub_service.elements.model;
 
 import com.ih.itinerary_hub_service.elements.types.ElementStatus;
 import com.ih.itinerary_hub_service.elements.types.ElementType;
+import com.ih.itinerary_hub_service.passengers.responses.PassengerDetails;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -22,6 +24,7 @@ public abstract class BaseElementDetails {
     private String notes;
     private ElementStatus status;
     private Integer order;
+    private List<PassengerDetails> passengerDetailsList;
 
     protected BaseElementDetails(
         BaseElementDetailsBuilder<?> builder
@@ -36,6 +39,7 @@ public abstract class BaseElementDetails {
         this.notes = builder.notes;
         this.status = builder.status;
         this.order = builder.order;
+        this.passengerDetailsList = builder.passengerDetailsList;
     }
 
     public static abstract class BaseElementDetailsBuilder<T extends BaseElementDetailsBuilder<T>> {
@@ -49,6 +53,7 @@ public abstract class BaseElementDetails {
         private String notes;
         private ElementStatus status;
         private Integer order;
+        private List<PassengerDetails> passengerDetailsList;
 
         public T baseElementID(UUID baseElementID) {
             this.baseElementID = baseElementID;
@@ -97,6 +102,11 @@ public abstract class BaseElementDetails {
 
         public T status(ElementStatus status) {
             this.status = status;
+            return self();
+        }
+
+        public T passengerList(List<PassengerDetails> passengerDetailsList) {
+            this.passengerDetailsList = passengerDetailsList;
             return self();
         }
 

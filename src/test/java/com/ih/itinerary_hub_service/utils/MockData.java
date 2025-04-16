@@ -11,6 +11,7 @@ import com.ih.itinerary_hub_service.users.persistence.entity.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class MockData {
@@ -96,7 +97,8 @@ public class MockData {
                 null,
                 BigDecimal.valueOf(23.45),
                 "Notes",
-                ElementStatus.PENDING
+                ElementStatus.PENDING,
+                List.of()
         );
     }
 }

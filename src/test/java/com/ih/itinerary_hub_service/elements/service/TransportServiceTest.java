@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ class TransportServiceTest {
         BaseElement baseElement = MockData.getNewBaseElement(UUID.randomUUID(), ElementType.TRANSPORT);
         when(transportRepository.save(any())).thenThrow(new IllegalArgumentException());
 
-        assertThrows(DbFailure.class, () -> transportService.createElement(MockData.mockTransportRequest, baseElement));
+        assertThrows(DbFailure.class, () -> transportService.createElement(MockData.mockTransportRequest, baseElement, List.of()));
     }
 
     @Test
@@ -87,7 +88,7 @@ class TransportServiceTest {
 
         when(transportRepository.getTransportElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(transportElement));
 
-        TransportElementDetails result = transportService.updateElement(request, baseElement);
+        TransportElementDetails result = transportService.updateElement(request, baseElement, List.of());
 
         assertNotNull(result);
         assertEquals(transportElement.getOriginPlace(), result.getOriginPlace());
@@ -125,7 +126,7 @@ class TransportServiceTest {
 
         when(transportRepository.getTransportElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(transportElement));
 
-        TransportElementDetails result = transportService.updateElement(request, baseElement);
+        TransportElementDetails result = transportService.updateElement(request, baseElement, List.of());
 
         assertNotNull(result);
         assertEquals(transportElement.getOriginPlace(), result.getOriginPlace());
@@ -157,7 +158,7 @@ class TransportServiceTest {
 
         when(transportRepository.getTransportElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(transportElement));
 
-        TransportElementDetails result = transportService.updateElement(request, baseElement);
+        TransportElementDetails result = transportService.updateElement(request, baseElement, List.of());
 
         assertNotNull(result);
         assertNull(transportElement.getOriginProvider());
@@ -194,7 +195,7 @@ class TransportServiceTest {
 
         when(transportRepository.getTransportElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(transportElement));
 
-        TransportElementDetails result = transportService.updateElement(request, baseElement);
+        TransportElementDetails result = transportService.updateElement(request, baseElement, List.of());
 
         assertNotNull(result);
         assertEquals(request.getOriginPlace(), result.getOriginPlace());
@@ -231,7 +232,7 @@ class TransportServiceTest {
         when(transportRepository.getTransportElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(transportElement));
         doThrow(IllegalArgumentException.class).when(transportRepository).save(any());
 
-        assertThrows(DbFailure.class, () -> transportService.updateElement(request, baseElement));
+        assertThrows(DbFailure.class, () -> transportService.updateElement(request, baseElement, List.of()));
     }
 
     @Test

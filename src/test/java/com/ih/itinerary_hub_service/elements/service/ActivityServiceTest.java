@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ class ActivityServiceTest {
         BaseElement baseElement = MockData.getNewBaseElement(UUID.randomUUID(), ElementType.ACTIVITY);
         when(activityRepository.save(any())).thenThrow(new IllegalArgumentException());
 
-        assertThrows(DbFailure.class, () -> activityService.createElement(MockData.mockActivityRequest, baseElement));
+        assertThrows(DbFailure.class, () -> activityService.createElement(MockData.mockActivityRequest, baseElement, List.of()));
     }
 
     @Test
@@ -91,7 +92,7 @@ class ActivityServiceTest {
 
         when(activityRepository.getActivityElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(element));
 
-        ActivityElementDetails result = activityService.updateElement(request, baseElement);
+        ActivityElementDetails result = activityService.updateElement(request, baseElement, List.of());
 
         assertNotNull(result);
         assertEquals(element.getActivityName(), result.getActivityName());
@@ -125,7 +126,7 @@ class ActivityServiceTest {
 
         when(activityRepository.getActivityElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(element));
 
-        ActivityElementDetails result = activityService.updateElement(request, baseElement);
+        ActivityElementDetails result = activityService.updateElement(request, baseElement, List.of());
 
         assertNotNull(result);
         assertEquals(element.getActivityName(), result.getActivityName());
@@ -159,7 +160,7 @@ class ActivityServiceTest {
 
         when(activityRepository.getActivityElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(element));
 
-        ActivityElementDetails result = activityService.updateElement(request, baseElement);
+        ActivityElementDetails result = activityService.updateElement(request, baseElement, List.of());
 
         assertNotNull(result);
         assertEquals(request.getActivityName(), result.getActivityName());
@@ -192,7 +193,7 @@ class ActivityServiceTest {
         when(activityRepository.getActivityElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(element));
         doThrow(IllegalArgumentException.class).when(activityRepository).save(any());
 
-        assertThrows(DbFailure.class, () -> activityService.updateElement(request, baseElement));
+        assertThrows(DbFailure.class, () -> activityService.updateElement(request, baseElement, List.of()));
     }
 
     @Test

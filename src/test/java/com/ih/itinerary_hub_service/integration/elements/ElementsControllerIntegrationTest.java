@@ -9,6 +9,8 @@ import com.ih.itinerary_hub_service.elements.types.ElementStatus;
 import com.ih.itinerary_hub_service.elements.types.ElementType;
 import com.ih.itinerary_hub_service.integration.BaseIntegrationTest;
 import com.ih.itinerary_hub_service.options.persistence.repository.OptionsRepository;
+import com.ih.itinerary_hub_service.passengers.persistence.repository.ElementPassengerRepository;
+import com.ih.itinerary_hub_service.passengers.persistence.repository.PassengersRepository;
 import com.ih.itinerary_hub_service.sections.persistence.repository.SectionsRepository;
 import com.ih.itinerary_hub_service.trips.persistence.repository.TripsRepository;
 import com.ih.itinerary_hub_service.users.persistence.repository.UserRepository;
@@ -27,6 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -56,8 +59,20 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private SectionsRepository sectionsRepository;
 
+    @Autowired
+    private PassengersRepository passengersRepository;
+
+    @Autowired
+    private ElementPassengerRepository elementPassengerRepository;
+
     private static final String BASE_ELEMENTS_URL = "/v1/sections/{sectionId}/options/{optionId}/elements";
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+    private final UUID PASSENGER_ONE_UUID = UUID.fromString(PASSENGER_ONE);
+    private final UUID PASSENGER_TWO_UUID = UUID.fromString(PASSENGER_TWO);
+    private final UUID PASSENGER_THREE_UUID = UUID.fromString(PASSENGER_THREE);
+    private final UUID PASSENGER_FOUR_UUID = UUID.fromString(PASSENGER_FOUR);
+    private final UUID PASSENGER_FIVE_UUID = UUID.fromString(PASSENGER_FIVE);
 
     @Nested
     class CreateElement {
@@ -76,7 +91,8 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
-                    ElementStatus.PENDING
+                    ElementStatus.PENDING,
+                    List.of(PASSENGER_ONE_UUID, PASSENGER_FOUR_UUID)
             );
 
 
@@ -89,6 +105,38 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     .order(order)
                     .build();
 
+            String expectedResponse = """
+                        {
+                          "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                          "elementType": "TRANSPORT",
+                          "elementCategory": "Flight",
+                          "link": null,
+                          "price": 23.45,
+                          "notes": "Notes",
+                          "status": "PENDING",
+                          "order": 1,
+                          "passengerDetailsList": [
+                            {
+                              "passengerId": "0e85075f-be86-4b31-96ec-08feea54fb0e",
+                              "firstName": "John",
+                              "lastName": "Doe",
+                              "avatar": "dog"
+                            },
+                            {
+                              "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                              "firstName": "Clara",
+                              "lastName": "Nguyen",
+                              "avatar": "fox"
+                            }
+                          ],
+                          "originPlace": "origin",
+                          "destinationPlace": "destination",
+                          "originDateTime": "2025-03-22T00:00:00",
+                          "destinationDateTime": "2025-04-25T00:00:00",
+                          "originProvider": null,
+                          "destinationProvider": null
+                        }
+                    """;
 
             mockMvc.perform(MockMvcRequestBuilders.post(
                                     BASE_ELEMENTS_URL + "/transport",
@@ -100,21 +148,8 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.baseElementID").exists())
-                    .andExpect(jsonPath("$.optionID").exists())
                     .andExpect(jsonPath("$.lastUpdatedAt").exists())
-                    .andExpect(jsonPath("$.elementType").value(ElementType.TRANSPORT.toString()))
-                    .andExpect(jsonPath("$.elementCategory").value("Flight"))
-                    .andExpect(jsonPath("$.link").isEmpty())
-                    .andExpect(jsonPath("$.price").value(23.45))
-                    .andExpect(jsonPath("$.notes").value("Notes"))
-                    .andExpect(jsonPath("$.status").value("PENDING"))
-                    .andExpect(jsonPath("$.order").value(order))
-                    .andExpect(jsonPath("$.originPlace").value(originPlace))
-                    .andExpect(jsonPath("$.destinationPlace").value(destinationPlace))
-                    .andExpect(jsonPath("$.originDateTime").value(originTime.format(formatter)))
-                    .andExpect(jsonPath("$.destinationDateTime").value(destinationTime.format(formatter)))
-                    .andExpect(jsonPath("$.originProvider").isEmpty())
-                    .andExpect(jsonPath("$.destinationProvider").isEmpty());
+                    .andExpect(content().json(expectedResponse));
         }
 
         @Test
@@ -131,10 +166,9 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     link,
                     BigDecimal.valueOf(23.45),
                     "Notes",
-                    ElementStatus.PENDING
+                    ElementStatus.PENDING,
+                    List.of()
             );
-
-
             ActivityElementRequest request = ActivityElementRequest.builder()
                     .baseElementRequest(base)
                     .activityName(activityName)
@@ -143,6 +177,24 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     .duration(null)
                     .order(order)
                     .build();
+
+            String expectedResponse = """
+                        {
+                          "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                          "elementType": "ACTIVITY",
+                          "elementCategory": "Escape room",
+                          "link": "https://some-link.co",
+                          "price": 23.45,
+                          "notes": "Notes",
+                          "status": "PENDING",
+                          "order": 3,
+                          "passengerDetailsList": [],
+                          "activityName": "activity",
+                          "location": "location",
+                          "startsAt": "2025-03-22T00:00:00",
+                          "duration": null
+                        }
+                    """;
 
             mockMvc.perform(MockMvcRequestBuilders.post(
                                     BASE_ELEMENTS_URL + "/activity",
@@ -154,19 +206,8 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.baseElementID").exists())
-                    .andExpect(jsonPath("$.optionID").exists())
                     .andExpect(jsonPath("$.lastUpdatedAt").exists())
-                    .andExpect(jsonPath("$.elementType").value(ElementType.ACTIVITY.toString()))
-                    .andExpect(jsonPath("$.elementCategory").value("Escape room"))
-                    .andExpect(jsonPath("$.link").value(link))
-                    .andExpect(jsonPath("$.price").value(23.45))
-                    .andExpect(jsonPath("$.notes").value("Notes"))
-                    .andExpect(jsonPath("$.status").value("PENDING"))
-                    .andExpect(jsonPath("$.order").value(order))
-                    .andExpect(jsonPath("$.activityName").value(activityName))
-                    .andExpect(jsonPath("$.location").value(location))
-                    .andExpect(jsonPath("$.startsAt").value(startsAt.format(formatter)))
-                    .andExpect(jsonPath("$.duration").isEmpty());
+                    .andExpect(content().json(expectedResponse));
         }
 
         @Test
@@ -183,7 +224,8 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     link,
                     null,
                     null,
-                    null
+                    null,
+                    List.of(PASSENGER_FIVE_UUID)
             );
 
             AccommodationEventRequest checkIn = new AccommodationEventRequest(checkInTime, 1);
@@ -198,34 +240,52 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     .build();
 
             String expectedResponse = """
-                    [
-                      {
-                        "elementType": "ACCOMMODATION",
-                        "elementCategory": "AirBnb",
-                        "link": "https://some-link.co",
-                        "price": null,
-                        "notes": null,
-                        "status": null,
-                        "order": 1,
-                        "place": "place",
-                        "location": "location",
-                        "accommodationType": "CHECK_IN",
-                        "dateTime": "2025-03-22T00:00:00"
-                      },
-                      {
-                        "elementType": "ACCOMMODATION",
-                        "elementCategory": "AirBnb",
-                        "link": "https://some-link.co",
-                        "price": null,
-                        "notes": null,
-                        "status": null,
-                        "order": 3,
-                        "place": "place",
-                        "location": "location",
-                        "accommodationType": "CHECK_OUT",
-                        "dateTime": "2025-03-23T00:00:00"
-                      }
-                    ]
+                        [
+                          {
+                            "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                            "elementType": "ACCOMMODATION",
+                            "elementCategory": "AirBnb",
+                            "link": "https://some-link.co",
+                            "price": null,
+                            "notes": null,
+                            "status": null,
+                            "order": 1,
+                            "passengerDetailsList": [
+                              {
+                                "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
+                                "firstName": "Ethan",
+                                "lastName": "Brown",
+                                "avatar": "turtle"
+                              }
+                            ],
+                            "place": "place",
+                            "location": "location",
+                            "accommodationType": "CHECK_IN",
+                            "dateTime": "2025-03-22T00:00:00"
+                          },
+                          {
+                            "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                            "elementType": "ACCOMMODATION",
+                            "elementCategory": "AirBnb",
+                            "link": "https://some-link.co",
+                            "price": null,
+                            "notes": null,
+                            "status": null,
+                            "order": 3,
+                            "passengerDetailsList": [
+                              {
+                                "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
+                                "firstName": "Ethan",
+                                "lastName": "Brown",
+                                "avatar": "turtle"
+                              }
+                            ],
+                            "place": "place",
+                            "location": "location",
+                            "accommodationType": "CHECK_OUT",
+                            "dateTime": "2025-03-23T00:00:00"
+                          }
+                        ]
                     """;
 
             mockMvc.perform(MockMvcRequestBuilders.post(
@@ -238,10 +298,8 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$[0].baseElementID").exists())
-                    .andExpect(jsonPath("$[0].optionID").exists())
                     .andExpect(jsonPath("$[0].lastUpdatedAt").exists())
                     .andExpect(jsonPath("$[1].baseElementID").exists())
-                    .andExpect(jsonPath("$[1].optionID").exists())
                     .andExpect(jsonPath("$[1].lastUpdatedAt").exists())
                     .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT));
         }
@@ -258,11 +316,38 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                           "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
                           "lastUpdatedAt": "2022-05-12T00:00:00",
                           "elementType": "TRANSPORT",
+                          "elementCategory": "Flight",
                           "link": null,
                           "price": 23.45,
                           "notes": "Notes",
                           "status": "PENDING",
                           "order": 2,
+                          "passengerDetailsList": [
+                            {
+                              "passengerId": "0e85075f-be86-4b31-96ec-08feea54fb0e",
+                              "firstName": "John",
+                              "lastName": "Doe",
+                              "avatar": "dog"
+                            },
+                            {
+                              "passengerId": "3c2c02d3-8a7f-4a1c-94bb-4cce3e9b90c1",
+                              "firstName": "Alice",
+                              "lastName": "Smith",
+                              "avatar": "cat"
+                            },
+                            {
+                              "passengerId": "e0a5409f-6b9e-4f2c-8418-a9275aa4ae52",
+                              "firstName": "Bob",
+                              "lastName": "Johnson",
+                              "avatar": "parrot"
+                            },
+                            {
+                              "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                              "firstName": "Clara",
+                              "lastName": "Nguyen",
+                              "avatar": "fox"
+                            }
+                          ],
                           "originPlace": "London Heathrow",
                           "destinationPlace": "Paris",
                           "originDateTime": "2022-05-12T00:00:00",
@@ -281,7 +366,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT));
+                    .andExpect(content().json(expectedResponse, JsonCompareMode.STRICT));
         }
 
         @Test
@@ -292,11 +377,13 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                           "optionID": "eb7fd861-6dba-4893-a4c8-bac1bd5a47ba",
                           "lastUpdatedAt": "2022-05-20T22:00:00",
                           "elementType": "ACTIVITY",
+                          "elementCategory": "Restaurant",
                           "link": null,
                           "price": 1000,
                           "notes": null,
                           "status": "BOOKED",
                           "order": 1,
+                          "passengerDetailsList": [],
                           "activityName": "Escape Room",
                           "location": "Paris, Street 2",
                           "startsAt": "2022-05-15T13:00:00",
@@ -313,7 +400,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT));
+                    .andExpect(content().json(expectedResponse, JsonCompareMode.STRICT));
         }
 
         @Test
@@ -324,11 +411,26 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                           "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
                           "lastUpdatedAt": "2022-05-15T00:00:00",
                           "elementType": "ACCOMMODATION",
+                          "elementCategory": "Hotel",
                           "link": "https://book-hotel.ih/",
                           "price": null,
                           "notes": null,
                           "status": null,
                           "order": 1,
+                          "passengerDetailsList": [
+                            {
+                              "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                              "firstName": "Clara",
+                              "lastName": "Nguyen",
+                              "avatar": "fox"
+                            },
+                            {
+                              "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
+                              "firstName": "Ethan",
+                              "lastName": "Brown",
+                              "avatar": "turtle"
+                            }
+                          ],
                           "place": "Hotel Name",
                           "location": "Paris, Some Street",
                           "accommodationType": "CHECK_IN",
@@ -345,7 +447,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT));
+                    .andExpect(content().json(expectedResponse, JsonCompareMode.STRICT));
         }
 
         @Test
@@ -443,58 +545,112 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
         @Test
         void shouldGetAllElementsInAnOption() throws Exception {
             String expectedResponse = """
-                    [
-                      {
-                        "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
-                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
-                        "lastUpdatedAt": "2022-05-15T00:00:00",
-                        "elementType": "ACCOMMODATION",
-                        "elementCategory": "Hotel",
-                        "link": "https://book-hotel.ih/",
-                        "price": null,
-                        "notes": null,
-                        "status": null,
-                        "order": 1,
-                        "place": "Hotel Name",
-                        "location": "Paris, Some Street",
-                        "accommodationType": "CHECK_IN",
-                        "dateTime": "2022-05-12T12:30:00"
-                      },
-                      {
-                        "baseElementID": "4e52ae05-06dc-423f-b86f-51a00cb8c452",
-                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
-                        "lastUpdatedAt": "2022-05-12T00:00:00",
-                        "elementType": "TRANSPORT",
-                        "elementCategory": "Flight",
-                        "link": null,
-                        "price": 23.45,
-                        "notes": "Notes",
-                        "status": "PENDING",
-                        "order": 2,
-                        "originPlace": "London Heathrow",
-                        "destinationPlace": "Paris",
-                        "originDateTime": "2022-05-12T00:00:00",
-                        "destinationDateTime": "2022-05-15T12:00:00",
-                        "originProvider": null,
-                        "destinationProvider": "Ryanair"
-                      },
-                      {
-                        "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
-                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
-                        "lastUpdatedAt": "2022-05-15T00:00:00",
-                        "elementType": "ACCOMMODATION",
-                        "elementCategory": "Hotel",
-                        "link": "https://book-hotel.ih/",
-                        "price": null,
-                        "notes": null,
-                        "status": null,
-                        "order": 3,
-                        "place": "Hotel Name",
-                        "location": "Paris, Some Street",
-                        "accommodationType": "CHECK_OUT",
-                        "dateTime": "2022-05-13T14:00:00"
-                      }
-                    ]
+                       [
+                         {
+                           "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
+                           "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                           "lastUpdatedAt": "2022-05-15T00:00:00",
+                           "elementType": "ACCOMMODATION",
+                           "elementCategory": "Hotel",
+                           "link": "https://book-hotel.ih/",
+                           "price": null,
+                           "notes": null,
+                           "status": null,
+                           "order": 1,
+                           "passengerDetailsList": [
+                             {
+                               "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                               "firstName": "Clara",
+                               "lastName": "Nguyen",
+                               "avatar": "fox"
+                             },
+                             {
+                               "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
+                               "firstName": "Ethan",
+                               "lastName": "Brown",
+                               "avatar": "turtle"
+                             }
+                           ],
+                           "place": "Hotel Name",
+                           "location": "Paris, Some Street",
+                           "accommodationType": "CHECK_IN",
+                           "dateTime": "2022-05-12T12:30:00"
+                         },
+                         {
+                           "baseElementID": "4e52ae05-06dc-423f-b86f-51a00cb8c452",
+                           "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                           "lastUpdatedAt": "2022-05-12T00:00:00",
+                           "elementType": "TRANSPORT",
+                           "elementCategory": "Flight",
+                           "link": null,
+                           "price": 23.45,
+                           "notes": "Notes",
+                           "status": "PENDING",
+                           "order": 2,
+                           "passengerDetailsList": [
+                             {
+                               "passengerId": "0e85075f-be86-4b31-96ec-08feea54fb0e",
+                               "firstName": "John",
+                               "lastName": "Doe",
+                               "avatar": "dog"
+                             },
+                             {
+                               "passengerId": "3c2c02d3-8a7f-4a1c-94bb-4cce3e9b90c1",
+                               "firstName": "Alice",
+                               "lastName": "Smith",
+                               "avatar": "cat"
+                             },
+                             {
+                               "passengerId": "e0a5409f-6b9e-4f2c-8418-a9275aa4ae52",
+                               "firstName": "Bob",
+                               "lastName": "Johnson",
+                               "avatar": "parrot"
+                             },
+                             {
+                               "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                               "firstName": "Clara",
+                               "lastName": "Nguyen",
+                               "avatar": "fox"
+                             }
+                           ],
+                           "originPlace": "London Heathrow",
+                           "destinationPlace": "Paris",
+                           "originDateTime": "2022-05-12T00:00:00",
+                           "destinationDateTime": "2022-05-15T12:00:00",
+                           "originProvider": null,
+                           "destinationProvider": "Ryanair"
+                         },
+                         {
+                           "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
+                           "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                           "lastUpdatedAt": "2022-05-15T00:00:00",
+                           "elementType": "ACCOMMODATION",
+                           "elementCategory": "Hotel",
+                           "link": "https://book-hotel.ih/",
+                           "price": null,
+                           "notes": null,
+                           "status": null,
+                           "order": 3,
+                           "passengerDetailsList": [
+                             {
+                               "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                               "firstName": "Clara",
+                               "lastName": "Nguyen",
+                               "avatar": "fox"
+                             },
+                             {
+                               "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
+                               "firstName": "Ethan",
+                               "lastName": "Brown",
+                               "avatar": "turtle"
+                             }
+                           ],
+                           "place": "Hotel Name",
+                           "location": "Paris, Some Street",
+                           "accommodationType": "CHECK_OUT",
+                           "dateTime": "2022-05-13T14:00:00"
+                         }
+                       ]
                     """;
 
             mockMvc.perform(MockMvcRequestBuilders.get(
@@ -504,7 +660,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                             .cookie(guestUserIdCookie)
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT));
+                    .andExpect(content().json(expectedResponse, JsonCompareMode.STRICT));
         }
     }
 
@@ -524,6 +680,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
             BaseElementRequest base = BaseElementRequest.builder()
                     .link(newLink)
                     .price(newPrice)
+                    .elementCategory("Train")
                     .build();
 
             TransportElementRequest request = TransportElementRequest.builder()
@@ -536,12 +693,41 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
 
             String expectedResponse = """
                       {
+                        "baseElementID": "4e52ae05-06dc-423f-b86f-51a00cb8c452",
+                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
                         "elementType": "TRANSPORT",
+                        "elementCategory": "Train",
                         "link": "%s",
                         "price": %s,
                         "notes": "Notes",
                         "status": "PENDING",
                         "order": 2,
+                        "passengerDetailsList": [
+                          {
+                            "passengerId": "0e85075f-be86-4b31-96ec-08feea54fb0e",
+                            "firstName": "John",
+                            "lastName": "Doe",
+                            "avatar": "dog"
+                          },
+                          {
+                            "passengerId": "3c2c02d3-8a7f-4a1c-94bb-4cce3e9b90c1",
+                            "firstName": "Alice",
+                            "lastName": "Smith",
+                            "avatar": "cat"
+                          },
+                          {
+                            "passengerId": "e0a5409f-6b9e-4f2c-8418-a9275aa4ae52",
+                            "firstName": "Bob",
+                            "lastName": "Johnson",
+                            "avatar": "parrot"
+                          },
+                          {
+                            "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                            "firstName": "Clara",
+                            "lastName": "Nguyen",
+                            "avatar": "fox"
+                          }
+                        ],
                         "originPlace": "%s",
                         "destinationPlace": "Paris",
                         "originDateTime": "2022-05-12T00:00:00",
@@ -550,13 +736,13 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                         "destinationProvider": "%s"
                       }
                     """.formatted(
-                            newLink,
-                            newPrice,
-                            newOriginPlace,
-                            newDestinationTime.format(formatter),
-                            newProvider,
-                            newProvider
-                    );
+                    newLink,
+                    newPrice,
+                    newOriginPlace,
+                    newDestinationTime.format(formatter),
+                    newProvider,
+                    newProvider
+            );
 
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(
                                     BASE_ELEMENTS_URL + "/{baseElementId}/transport",
@@ -568,8 +754,6 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.baseElementID").exists())
-                    .andExpect(jsonPath("$.optionID").exists())
                     .andExpect(jsonPath("$.lastUpdatedAt").exists())
                     .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT))
                     .andReturn();
@@ -609,11 +793,13 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
             String expectedResponse = """
                       {
                         "elementType": "ACTIVITY",
+                        "elementCategory": "Restaurant",
                         "link": null,
                         "price": 1000,
                         "notes": null,
                         "status": "%s",
                         "order": 1,
+                        "passengerDetailsList": [],
                         "activityName": "%s",
                         "location": "Paris, Street 2",
                         "startsAt": "%s",
@@ -636,8 +822,6 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.baseElementID").exists())
-                    .andExpect(jsonPath("$.optionID").exists())
                     .andExpect(jsonPath("$.lastUpdatedAt").exists())
                     .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT))
                     .andReturn();
@@ -678,40 +862,74 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     .build();
 
             String expectedResponse = """
-                        [
+                    [
+                      {
+                        "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
+                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                        "elementType": "ACCOMMODATION",
+                        "elementCategory": "Hotel",
+                        "link": "https://book-hotel.ih/",
+                        "price": %s,
+                        "notes": "%s",
+                        "status": null,
+                        "order": 1,
+                        "passengerDetailsList": [
                           {
-                            "elementType": "ACCOMMODATION",
-                            "link": "https://book-hotel.ih/",
-                            "price": %s,
-                            "notes": "%s",
-                            "status": null,
-                            "order": 1,
-                            "place": "Hotel Name",
-                            "location": null,
-                            "accommodationType": "CHECK_IN",
-                            "dateTime": "%s"
+                            "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                            "firstName": "Clara",
+                            "lastName": "Nguyen",
+                            "avatar": "fox"
                           },
                           {
-                            "elementType": "ACCOMMODATION",
-                            "link": "https://book-hotel.ih/",
-                            "price": %s,
-                            "notes": "%s",
-                            "status": null,
-                            "order": %s,
-                            "place": "Hotel Name",
-                            "location": null,
-                            "accommodationType": "CHECK_OUT",
-                            "dateTime": "2022-05-13T14:00:00"
+                            "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
+                            "firstName": "Ethan",
+                            "lastName": "Brown",
+                            "avatar": "turtle"
                           }
+                        ],
+                        "place": "Hotel Name",
+                        "location": null,
+                        "accommodationType": "CHECK_IN",
+                        "dateTime": "%s"
+                      },
+                      {
+                        "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
+                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                        "elementType": "ACCOMMODATION",
+                        "elementCategory": "Hotel",
+                        "link": "https://book-hotel.ih/",
+                        "price": %s,
+                        "notes": "%s",
+                        "status": null,
+                        "order": %s,
+                        "passengerDetailsList": [
+                          {
+                            "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                            "firstName": "Clara",
+                            "lastName": "Nguyen",
+                            "avatar": "fox"
+                          },
+                          {
+                            "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
+                            "firstName": "Ethan",
+                            "lastName": "Brown",
+                            "avatar": "turtle"
+                          }
+                        ],
+                        "place": "Hotel Name",
+                        "location": null,
+                        "accommodationType": "CHECK_OUT",
+                        "dateTime": "2022-05-13T14:00:00"
+                      }
                     ]
                     """.formatted(
-                            newPrice,
-                            newNotes,
-                            newCheckInTime.format(formatter),
-                            newPrice,
-                            newNotes,
-                            newCheckOutOrder
-                    );
+                    newPrice,
+                    newNotes,
+                    newCheckInTime.format(formatter),
+                    newPrice,
+                    newNotes,
+                    newCheckOutOrder
+            );
 
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(
                                     BASE_ELEMENTS_URL + "/{baseElementId}/accommodation",
@@ -723,11 +941,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$[0].baseElementID").exists())
-                    .andExpect(jsonPath("$[0].optionID").exists())
                     .andExpect(jsonPath("$[0].lastUpdatedAt").exists())
-                    .andExpect(jsonPath("$[1].baseElementID").exists())
-                    .andExpect(jsonPath("$[1].optionID").exists())
                     .andExpect(jsonPath("$[1].lastUpdatedAt").exists())
                     .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT))
                     .andReturn();
@@ -750,7 +964,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
         @MethodSource("updateOrderRequestArgs")
         void shouldUpdateElementOrder(ElementType elementType, Optional<AccommodationType> accType, String baseElementId, String optionId) throws Exception {
             UpdateElementOrderRequest request = new UpdateElementOrderRequest(
-                elementType, 4, accType
+                    elementType, 4, accType
             );
 
             mockMvc.perform(MockMvcRequestBuilders.put(
@@ -764,7 +978,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
 
             String path = elementType.toString().toLowerCase();
 
-            if(accType.isPresent()) {
+            if (accType.isPresent()) {
                 String param = "?type=" + accType.get();
                 path += param;
             }
@@ -826,8 +1040,130 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Nested
-    class DeleteElement {
+    class PassengerElement {
+        @Test
+        void shouldUpdateTransportElement() throws Exception {
+            // Transport element has 4 passengers: 1-4
 
+            BaseElementRequest base = BaseElementRequest.builder()
+                    .passengerIds(List.of(PASSENGER_TWO_UUID, PASSENGER_THREE_UUID, PASSENGER_FIVE_UUID)) // removing 1st, and 4th, adding 5th
+                    .build();
+
+            TransportElementRequest request = TransportElementRequest.builder()
+                    .baseElementRequest(base)
+                    .build();
+
+            String expectedResponse = """
+                      {
+                        "passengerDetailsList": [
+                          {
+                            "passengerId": "%s",
+                            "firstName": "Alice",
+                            "lastName": "Smith",
+                            "avatar": "cat"
+                          },
+                          {
+                            "passengerId": "%s",
+                            "firstName": "Bob",
+                            "lastName": "Johnson",
+                            "avatar": "parrot"
+                          },
+                          {
+                            "passengerId": "%s",
+                            "firstName": "Ethan",
+                            "lastName": "Brown",
+                            "avatar": "turtle"
+                          }
+                        ]
+                      }
+                    """.formatted(PASSENGER_TWO, PASSENGER_THREE, PASSENGER_FIVE);
+
+            mockMvc.perform(MockMvcRequestBuilders.put(
+                                    BASE_ELEMENTS_URL + "/{baseElementId}/transport",
+                                    SECTION_ONE,
+                                    OPTION_ONE,
+                                    TRANSPORT_ELEMENT)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT));
+        }
+
+        @Test
+        void shouldUpdateActivityElement() throws Exception {
+            BaseElementRequest base = BaseElementRequest.builder()
+                    .passengerIds(List.of(PASSENGER_FOUR_UUID))
+                    .build();
+
+            ActivityElementRequest request = ActivityElementRequest.builder()
+                    .baseElementRequest(base)
+                    .build();
+
+            String expectedResponse = """
+                      {
+                        "passengerDetailsList": [
+                          {
+                            "passengerId": "%s",
+                            "firstName": "Clara",
+                            "lastName": "Nguyen",
+                            "avatar": "fox"
+                          }
+                        ]
+                      }
+                    """.formatted(PASSENGER_FOUR);
+
+            mockMvc.perform(MockMvcRequestBuilders.put(
+                                    BASE_ELEMENTS_URL + "/{baseElementId}/activity",
+                                    SECTION_ONE,
+                                    OPTION_TWO,
+                                    ACTIVITY_ELEMENT)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT));
+        }
+
+        @Test
+        void shouldUpdateAccommodationElement() throws Exception {
+            BaseElementRequest base = BaseElementRequest.builder()
+                    .passengerIds(List.of())
+                    .build();
+
+            AccommodationElementRequest request = AccommodationElementRequest.builder()
+                    .baseElementRequest(base)
+                    .build();
+
+            String expectedResponse = """
+                    [
+                      {
+                        "passengerDetailsList": []
+                      },
+                      {
+                        "passengerDetailsList": []
+                      }
+                    ]
+                    """;
+
+            mockMvc.perform(MockMvcRequestBuilders.put(
+                                    BASE_ELEMENTS_URL + "/{baseElementId}/accommodation",
+                                    SECTION_ONE,
+                                    OPTION_ONE,
+                                    ACCOMMODATION_ELEMENT)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andExpect(content().json(expectedResponse, JsonCompareMode.LENIENT));
+        }
+    }
+
+    @Nested
+    class DeleteElement {
 
         @ParameterizedTest
         @MethodSource("deleteElementArgs")
@@ -846,7 +1182,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
 
             String getParam = elementType.toString().toLowerCase();
 
-            if(elementType == ElementType.ACCOMMODATION) {
+            if (elementType == ElementType.ACCOMMODATION) {
                 getParam += "?type=" + AccommodationType.CHECK_IN;
             }
 
