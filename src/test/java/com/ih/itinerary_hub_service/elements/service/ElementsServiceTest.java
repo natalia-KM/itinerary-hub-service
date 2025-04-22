@@ -10,6 +10,7 @@ import com.ih.itinerary_hub_service.elements.types.AccommodationType;
 import com.ih.itinerary_hub_service.elements.types.ElementStatus;
 import com.ih.itinerary_hub_service.elements.types.ElementType;
 import com.ih.itinerary_hub_service.exceptions.DbFailure;
+import com.ih.itinerary_hub_service.passengers.service.GlobalPassengersService;
 import com.ih.itinerary_hub_service.utils.MockData;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,9 @@ class ElementsServiceTest {
     @Mock
     private TransportService transportService;
 
+    @Mock
+    private GlobalPassengersService passengersService;
+
     @InjectMocks
     private ElementsService elementsService;
 
@@ -57,9 +61,11 @@ class ElementsServiceTest {
             BaseElementRequest base = new BaseElementRequest(
                     type,
                     null,
+                    null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
-                    ElementStatus.PENDING
+                    ElementStatus.PENDING,
+                    List.of()
             );
 
             TransportElementRequest request = TransportElementRequest.builder()
@@ -87,9 +93,11 @@ class ElementsServiceTest {
             BaseElementRequest base = new BaseElementRequest(
                     type,
                     null,
+                    null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
-                    ElementStatus.PENDING
+                    ElementStatus.PENDING,
+                    List.of()
             );
 
             ActivityElementRequest request = ActivityElementRequest.builder()
@@ -117,9 +125,11 @@ class ElementsServiceTest {
             BaseElementRequest base = new BaseElementRequest(
                     type,
                     null,
+                    null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
-                    ElementStatus.PENDING
+                    ElementStatus.PENDING,
+                    List.of()
             );
             AccommodationEventRequest checkIn = new AccommodationEventRequest(LocalDateTime.now(), checkInOrder);
             AccommodationEventRequest checkOut = new AccommodationEventRequest(LocalDateTime.now().plusDays(1), checkOutOrder);
@@ -171,6 +181,7 @@ class ElementsServiceTest {
 
             BaseElement baseElement = MockData.getNewBaseElement(elementId, invalidType);
             when(baseElementRepository.findByBaseIdAndOptionId(elementId, MockData.optionId)).thenReturn(Optional.of(baseElement));
+            when(passengersService.getAllPassengersInElement(any())).thenReturn(List.of());
 
             assertThrows(InvalidElementRequest.class, () -> elementsService.getTransportElementById(MockData.mockOption, elementId));
         }
@@ -181,6 +192,7 @@ class ElementsServiceTest {
 
             BaseElement baseElement = MockData.getNewBaseElement(elementId, invalidType);
             when(baseElementRepository.findByBaseIdAndOptionId(elementId, MockData.optionId)).thenReturn(Optional.of(baseElement));
+            when(passengersService.getAllPassengersInElement(any())).thenReturn(List.of());
 
             assertThrows(InvalidElementRequest.class, () -> elementsService.getActivityElementById(MockData.mockOption, elementId));
         }
@@ -191,6 +203,7 @@ class ElementsServiceTest {
 
             BaseElement baseElement = MockData.getNewBaseElement(elementId, invalidType);
             when(baseElementRepository.findByBaseIdAndOptionId(elementId, MockData.optionId)).thenReturn(Optional.of(baseElement));
+            when(passengersService.getAllPassengersInElement(any())).thenReturn(List.of());
 
             assertThrows(InvalidElementRequest.class, () -> elementsService.getAccommElementById(MockData.mockOption, elementId, AccommodationType.CHECK_IN));
         }
@@ -206,9 +219,11 @@ class ElementsServiceTest {
             BaseElementRequest base = new BaseElementRequest(
                     invalidType,
                     null,
+                    null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
-                    ElementStatus.PENDING
+                    ElementStatus.PENDING,
+                    List.of()
             );
 
             TransportElementRequest request = TransportElementRequest.builder()
@@ -232,9 +247,11 @@ class ElementsServiceTest {
             BaseElementRequest base = new BaseElementRequest(
                     invalidType,
                     null,
+                    null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
-                    ElementStatus.PENDING
+                    ElementStatus.PENDING,
+                    List.of()
             );
 
             ActivityElementRequest request = ActivityElementRequest.builder()
@@ -257,9 +274,11 @@ class ElementsServiceTest {
             BaseElementRequest base = new BaseElementRequest(
                     invalidType,
                     null,
+                    null,
                     BigDecimal.valueOf(23.45),
                     "Notes",
-                    ElementStatus.PENDING
+                    ElementStatus.PENDING,
+                    null
             );
             AccommodationEventRequest checkIn = new AccommodationEventRequest(LocalDateTime.now(), null);
             AccommodationEventRequest checkOut = new AccommodationEventRequest(LocalDateTime.now().plusDays(1), null);
@@ -325,12 +344,13 @@ class ElementsServiceTest {
         TransportElementDetails tr5 = getNewTransportElementDetails(baseElement5, 2);
 
         when(baseElementRepository.findByOptionId(MockData.optionId)).thenReturn(baseElements);
+        when(passengersService.getAllPassengersInElement(any())).thenReturn(List.of());
 
-        when(transportService.getTransportElementDetails(baseElement1)).thenReturn(tr1);
-        when(transportService.getTransportElementDetails(baseElement2)).thenReturn(tr2);
-        when(transportService.getTransportElementDetails(baseElement3)).thenReturn(tr3);
-        when(transportService.getTransportElementDetails(baseElement4)).thenReturn(tr4);
-        when(transportService.getTransportElementDetails(baseElement5)).thenReturn(tr5);
+        when(transportService.getTransportElementDetails(baseElement1, List.of())).thenReturn(tr1);
+        when(transportService.getTransportElementDetails(baseElement2, List.of())).thenReturn(tr2);
+        when(transportService.getTransportElementDetails(baseElement3, List.of())).thenReturn(tr3);
+        when(transportService.getTransportElementDetails(baseElement4, List.of())).thenReturn(tr4);
+        when(transportService.getTransportElementDetails(baseElement5, List.of())).thenReturn(tr5);
 
         List<BaseElementDetails> result = elementsService.getElementsByIds(MockData.optionId);
 

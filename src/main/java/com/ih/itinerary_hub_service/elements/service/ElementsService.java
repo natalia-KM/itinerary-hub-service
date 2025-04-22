@@ -16,14 +16,13 @@ import com.ih.itinerary_hub_service.elements.types.AccommodationType;
 import com.ih.itinerary_hub_service.elements.types.ElementType;
 import com.ih.itinerary_hub_service.exceptions.DbFailure;
 import com.ih.itinerary_hub_service.options.persistence.entity.Option;
+import com.ih.itinerary_hub_service.passengers.responses.PassengerDetails;
+import com.ih.itinerary_hub_service.passengers.service.GlobalPassengersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,12 +34,14 @@ public class ElementsService {
     private final TransportService transportService;
     private final ActivityService activityService;
     private final AccommodationService accommodationService;
+    private final GlobalPassengersService passengersService;
 
-    public ElementsService(BaseElementRepository baseElementRepository, TransportService transportService, ActivityService activityService, AccommodationService accommodationService) {
+    public ElementsService(BaseElementRepository baseElementRepository, TransportService transportService, ActivityService activityService, AccommodationService accommodationService, GlobalPassengersService passengersService) {
         this.baseElementRepository = baseElementRepository;
         this.transportService = transportService;
         this.activityService = activityService;
         this.accommodationService = accommodationService;
+        this.passengersService = passengersService;
     }
 
     public TransportElementDetails createTransportElement(Option option, TransportElementRequest request) {
@@ -51,8 +52,9 @@ public class ElementsService {
         }
 
         BaseElement baseElement = saveNewBaseElement(option, ElementType.TRANSPORT, baseRequest);
+        List<PassengerDetails> passengerDetailsList = assignPassengers(baseElement, baseRequest);
 
-        return transportService.createElement(request, baseElement);
+        return transportService.createElement(request, baseElement, passengerDetailsList);
     }
 
     public ActivityElementDetails createActivityElement(Option option, ActivityElementRequest request) {
@@ -64,7 +66,9 @@ public class ElementsService {
 
         BaseElement baseElement = saveNewBaseElement(option, ElementType.ACTIVITY, baseRequest);
 
-        return activityService.createElement(request, baseElement);
+        List<PassengerDetails> passengerDetailsList = assignPassengers(baseElement, baseRequest);
+
+        return activityService.createElement(request, baseElement, passengerDetailsList);
     }
 
     public List<AccommodationElementDetails> createAccommodationsElement(Option option, AccommodationElementRequest request) {
@@ -77,36 +81,40 @@ public class ElementsService {
         }
 
         BaseElement baseElement = saveNewBaseElement(option, ElementType.ACCOMMODATION, baseRequest);
+        List<PassengerDetails> passengerDetailsList = assignPassengers(baseElement, baseRequest);
 
-        return accommodationService.createElements(request, baseElement);
+        return accommodationService.createElements(request, baseElement, passengerDetailsList);
     }
 
     public TransportElementDetails getTransportElementById(Option option, UUID baseElementId) {
         BaseElement baseElement = getBaseElement(option, baseElementId);
+        List<PassengerDetails> passengerDetailsList = passengersService.getAllPassengersInElement(baseElement);
 
         if(baseElement.getElementType() != ElementType.TRANSPORT) {
             throw new InvalidElementRequest("Invalid request");
         }
-        return transportService.getTransportElementDetails(baseElement);
+        return transportService.getTransportElementDetails(baseElement, passengerDetailsList);
     }
 
     public ActivityElementDetails getActivityElementById(Option option, UUID baseElementId) {
         BaseElement baseElement = getBaseElement(option, baseElementId);
+        List<PassengerDetails> passengerDetailsList = passengersService.getAllPassengersInElement(baseElement);
 
         if(baseElement.getElementType() != ElementType.ACTIVITY) {
             throw new InvalidElementRequest("Invalid request");
         }
-        return activityService.getElementDetailsByID(baseElement);
+        return activityService.getElementDetailsByID(baseElement, passengerDetailsList);
     }
 
     public AccommodationElementDetails getAccommElementById(Option option, UUID baseElementId, AccommodationType type) {
         BaseElement baseElement = getBaseElement(option, baseElementId);
+        List<PassengerDetails> passengerDetailsList = passengersService.getAllPassengersInElement(baseElement);
 
         if(baseElement.getElementType() != ElementType.ACCOMMODATION) {
             log.error("The element with id {} is not accommodation", baseElementId);
             throw new InvalidElementRequest("Invalid request");
         }
-        return accommodationService.getSingleAccommodationDetailsElement(baseElement, type);
+        return accommodationService.getSingleAccommodationDetailsElement(baseElement, type, passengerDetailsList);
     }
 
     public TransportElementDetails updateTransportElement(Option option, UUID baseElementId, TransportElementRequest request) {
@@ -119,7 +127,9 @@ public class ElementsService {
         }
 
         BaseElement updatedElement = updateBaseElement(existingBaseElement, baseRequest);
-        return transportService.updateElement(request, updatedElement);
+        List<PassengerDetails> passengerDetailsList = passengersService.updateAllPassengersInElement(request.getBaseElementRequest().getPassengerIds(), existingBaseElement);
+
+        return transportService.updateElement(request, updatedElement, passengerDetailsList);
     }
 
     public ActivityElementDetails updateActivityElement(Option option, UUID baseElementId, ActivityElementRequest request) {
@@ -131,9 +141,10 @@ public class ElementsService {
             throw new InvalidElementRequest("Invalid request");
         }
 
+        List<PassengerDetails> passengerDetailsList = passengersService.updateAllPassengersInElement(request.getBaseElementRequest().getPassengerIds(), existingBaseElement);
 
         BaseElement updatedElement = updateBaseElement(existingBaseElement, baseRequest);
-        return activityService.updateElement(request, updatedElement);
+        return activityService.updateElement(request, updatedElement, passengerDetailsList);
     }
 
     public List<AccommodationElementDetails> updateAccommodationElements(Option option, UUID baseElementId, AccommodationElementRequest request) {
@@ -145,9 +156,10 @@ public class ElementsService {
             throw new InvalidElementRequest("Invalid request");
         }
 
-
         BaseElement updatedElement = updateBaseElement(existingBaseElement, baseRequest);
-        return accommodationService.updateAccommodationElements(request, updatedElement);
+        List<PassengerDetails> passengerDetailsList = passengersService.updateAllPassengersInElement(request.getBaseElementRequest().getPassengerIds(), existingBaseElement);
+
+        return accommodationService.updateAccommodationElements(request, updatedElement, passengerDetailsList);
     }
 
     public void updateElementOrder(Integer order, UUID baseElementId, ElementType elType, Optional<AccommodationType> accType) {
@@ -168,6 +180,7 @@ public class ElementsService {
         BaseElement baseElement = getBaseElement(option, baseElementId);
 
         try {
+            passengersService.deleteByElement(baseElement);
             baseElementRepository.delete(baseElement);
             log.info("Successfully deleted element with id {}", baseElementId);
         } catch (Exception e) {
@@ -176,21 +189,21 @@ public class ElementsService {
         }
     }
 
-
     public List<BaseElementDetails> getElementsByIds(UUID optionId) {
         List<BaseElement> baseElements = baseElementRepository.findByOptionId(optionId);
 
         return baseElements.stream()
                 .flatMap(baseElement -> {
+                    List<PassengerDetails> passengerDetailsList = passengersService.getAllPassengersInElement(baseElement);
                     switch (baseElement.getElementType()) {
                         case ACTIVITY -> {
-                            return Stream.of(activityService.getElementDetailsByID(baseElement));
+                            return Stream.of(activityService.getElementDetailsByID(baseElement, passengerDetailsList));
                         }
                         case TRANSPORT -> {
-                            return Stream.of(transportService.getTransportElementDetails(baseElement));
+                            return Stream.of(transportService.getTransportElementDetails(baseElement, passengerDetailsList));
                         }
                         case ACCOMMODATION -> {
-                            return accommodationService.getAccommodationDetailsPair(baseElement).stream();
+                            return accommodationService.getAccommodationDetailsPair(baseElement, passengerDetailsList).stream();
                         }
                         default -> throw new ElementDoesNotExist("Could not find base element");
                     }
@@ -232,6 +245,10 @@ public class ElementsService {
             baseElement.setStatus(request.getStatus());
         }
 
+        if(request.getElementCategory() != null) {
+            baseElement.setElementCategory(request.getElementCategory());
+        }
+
         baseElement.setLastUpdatedAt(LocalDateTime.now());
 
         try {
@@ -241,6 +258,21 @@ public class ElementsService {
             log.error("Failed to save baseElement {}", e.getMessage());
             throw new DbFailure("Failed to save baseElement");
         }
+    }
+
+    private List<PassengerDetails> assignPassengers(BaseElement baseElement, BaseElementRequest baseRequest) {
+        List<UUID> passengerIds = baseRequest.getPassengerIds();
+
+        if(passengerIds == null || passengerIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<PassengerDetails> passengerDetails = new ArrayList<>();
+        for(UUID passengerId : passengerIds) {
+            passengersService.assignPassengerToElement(passengerId, baseElement);
+            passengerDetails.add(passengersService.getPassengerDetails(passengerId));
+        }
+        return passengerDetails;
     }
 
     private BaseElement saveNewBaseElement(Option option, ElementType elementType, BaseElementRequest baseRequest) {
@@ -264,6 +296,7 @@ public class ElementsService {
                 option,
                 dateTime,
                 type,
+                baseRequest.getElementCategory(),
                 baseRequest.getLink(),
                 baseRequest.getPrice(),
                 baseRequest.getNotes(),

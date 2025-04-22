@@ -9,6 +9,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,8 +19,10 @@ import java.math.BigDecimal;
 @SuperBuilder
 public class BaseElementRequest {
     private ElementType elementType;
+    private String elementCategory;
     private String link;
     private BigDecimal price;
     private String notes;
     private ElementStatus status;
+    private List<UUID> passengerIds;
 }

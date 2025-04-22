@@ -1,5 +1,7 @@
 package com.ih.itinerary_hub_service.users.service;
 
+import com.ih.itinerary_hub_service.passengers.requests.CreatePassengerRequest;
+import com.ih.itinerary_hub_service.passengers.service.GlobalPassengersService;
 import com.ih.itinerary_hub_service.users.exceptions.UserAlreadyExists;
 import com.ih.itinerary_hub_service.users.exceptions.UserNotFoundException;
 import com.ih.itinerary_hub_service.users.persistence.entity.User;
@@ -18,9 +20,11 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final GlobalPassengersService passengersService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, GlobalPassengersService passengersService) {
         this.userRepository = userRepository;
+        this.passengersService = passengersService;
     }
 
     public User createGuestUser(String firstName, String lastName) {
@@ -36,6 +40,8 @@ public class UserService {
             log.error("Failed to save user to the database: {}", e.getMessage());
             throw new RuntimeException("Failed to save user to the database", e);
         }
+
+        createUserPassenger(newUser);
 
         return newUser;
     }
@@ -53,6 +59,8 @@ public class UserService {
             log.error("Failed to save user to the database: {}", e.getMessage());
             throw new RuntimeException("Failed to save user to the database", e);
         }
+
+        createUserPassenger(newUser);
 
         return newUser;
     }
@@ -143,5 +151,12 @@ public class UserService {
         log.info("Google token revoked");
     }
 
-
+    private void createUserPassenger(User user) {
+        CreatePassengerRequest request = new CreatePassengerRequest(
+                user.getFirstName(),
+                user.getLastName(),
+                "default"
+        );
+        passengersService.createPassenger(user, request);
+    }
 }

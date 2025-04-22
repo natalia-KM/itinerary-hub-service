@@ -7,9 +7,11 @@ import com.ih.itinerary_hub_service.elements.persistence.entity.BaseElement;
 import com.ih.itinerary_hub_service.elements.persistence.repository.ActivityRepository;
 import com.ih.itinerary_hub_service.elements.requests.ActivityElementRequest;
 import com.ih.itinerary_hub_service.exceptions.DbFailure;
+import com.ih.itinerary_hub_service.passengers.responses.PassengerDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,7 +24,7 @@ public class ActivityService {
         this.activityRepository = activityRepository;
     }
 
-    public ActivityElementDetails createElement(ActivityElementRequest request, BaseElement baseElement) {
+    public ActivityElementDetails createElement(ActivityElementRequest request, BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
         UUID elementId = UUID.randomUUID();
 
         ActivityElement activityElement = new ActivityElement(
@@ -38,7 +40,7 @@ public class ActivityService {
         try {
             activityRepository.save(activityElement);
             log.info("Created element with id {}", elementId);
-            return mapElementDetails(baseElement, activityElement);
+            return mapElementDetails(baseElement, activityElement, passengerDetailsList);
         } catch (Exception e) {
             log.error("Failed to save activity element, {}", e.getMessage());
             throw new DbFailure(e.getMessage());
@@ -58,7 +60,7 @@ public class ActivityService {
         }
     }
 
-    public ActivityElementDetails updateElement(ActivityElementRequest request, BaseElement baseElement) {
+    public ActivityElementDetails updateElement(ActivityElementRequest request, BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
         ActivityElement activityElement = getElementById(baseElement.getBaseElementId());
 
         if (request.getActivityName() != null && !request.getActivityName().isBlank()) {
@@ -84,7 +86,7 @@ public class ActivityService {
         try {
             activityRepository.save(activityElement);
             log.info("Updated element with id {}", activityElement.getElementId());
-            return mapElementDetails(baseElement, activityElement);
+            return mapElementDetails(baseElement, activityElement, passengerDetailsList);
         } catch (Exception e) {
             log.error("Failed to update activity element, {}", e.getMessage());
             throw new DbFailure(e.getMessage());
@@ -111,10 +113,11 @@ public class ActivityService {
                 });
     }
 
-    public ActivityElementDetails mapElementDetails(BaseElement baseElement, ActivityElement element) {
-        ActivityElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, element.getElementOrder());
+    public ActivityElementDetails mapElementDetails(BaseElement baseElement, ActivityElement element, List<PassengerDetails> passengerDetailsList) {
+        ActivityElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, element.getElementOrder(), passengerDetailsList);
 
         return baseElementBuild
+                .elementID(element.getElementId())
                 .activityName(element.getActivityName())
                 .location(element.getLocation())
                 .startsAt(element.getStartsAt())
@@ -123,22 +126,24 @@ public class ActivityService {
     }
 
 
-    public ActivityElementDetails getElementDetailsByID(BaseElement baseElement) {
+    public ActivityElementDetails getElementDetailsByID(BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
         ActivityElement element = getElementById(baseElement.getBaseElementId());
 
-        return mapElementDetails(baseElement, element);
+        return mapElementDetails(baseElement, element, passengerDetailsList);
     }
 
-    private static ActivityElementDetails.Builder getBaseElementBuild(BaseElement baseElement, Integer order) {
+    private static ActivityElementDetails.Builder getBaseElementBuild(BaseElement baseElement, Integer order, List<PassengerDetails> passengerDetailsList) {
         return new ActivityElementDetails.Builder()
                 .baseElementID(baseElement.getBaseElementId())
                 .optionID(baseElement.getOption().getOptionId())
                 .lastUpdatedAt(baseElement.getLastUpdatedAt())
                 .elementType(baseElement.getElementType())
+                .elementCategory(baseElement.getElementCategory())
                 .link(baseElement.getLink())
                 .price(baseElement.getPrice())
                 .notes(baseElement.getNotes())
                 .status(baseElement.getStatus())
+                .passengerList(passengerDetailsList)
                 .order(order);
     }
 }

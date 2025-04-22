@@ -7,9 +7,11 @@ import com.ih.itinerary_hub_service.elements.persistence.entity.TransportElement
 import com.ih.itinerary_hub_service.elements.persistence.repository.TransportRepository;
 import com.ih.itinerary_hub_service.elements.requests.TransportElementRequest;
 import com.ih.itinerary_hub_service.exceptions.DbFailure;
+import com.ih.itinerary_hub_service.passengers.responses.PassengerDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,7 +25,7 @@ public class TransportService {
         this.transportRepository = transportRepository;
     }
 
-    public TransportElementDetails createElement(TransportElementRequest request, BaseElement baseElement) {
+    public TransportElementDetails createElement(TransportElementRequest request, BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
         UUID elementId = UUID.randomUUID();
 
         TransportElement transportElement = new TransportElement(
@@ -40,7 +42,7 @@ public class TransportService {
         try {
             transportRepository.save(transportElement);
             log.info("Created element with id {}", elementId);
-            return mapElementDetails(baseElement, transportElement);
+            return mapElementDetails(baseElement, transportElement, passengerDetailsList);
         } catch (Exception e) {
             log.error("Failed to save transport element, {}", e.getMessage());
             throw new DbFailure(e.getMessage());
@@ -60,7 +62,7 @@ public class TransportService {
         }
     }
 
-    public TransportElementDetails updateElement(TransportElementRequest request, BaseElement baseElement) {
+    public TransportElementDetails updateElement(TransportElementRequest request, BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
         TransportElement transportElement = getElementByBaseId(baseElement.getBaseElementId());
 
         if (request.getOriginPlace() != null && !request.getOriginPlace().isBlank()) {
@@ -94,7 +96,7 @@ public class TransportService {
         try {
             transportRepository.save(transportElement);
             log.info("Updated element with id {}", transportElement.getElementId());
-            return mapElementDetails(baseElement, transportElement);
+            return mapElementDetails(baseElement, transportElement, passengerDetailsList);
         } catch (Exception e) {
             log.error("Failed to update transport element, {}", e.getMessage());
             throw new DbFailure(e.getMessage());
@@ -121,10 +123,11 @@ public class TransportService {
                 });
     }
 
-    public TransportElementDetails mapElementDetails(BaseElement baseElement, TransportElement element) {
-        TransportElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, element.getElementOrder());
+    public TransportElementDetails mapElementDetails(BaseElement baseElement, TransportElement element, List<PassengerDetails> passengerDetailsList) {
+        TransportElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, element.getElementOrder(), passengerDetailsList);
 
         return baseElementBuild
+                .elementID(element.getElementId())
                 .originPlace(element.getOriginPlace())
                 .destinationPlace(element.getDestinationPlace())
                 .originDateTime(element.getOriginDateTime())
@@ -133,22 +136,25 @@ public class TransportService {
                 .build();
     }
 
-    public TransportElementDetails getTransportElementDetails(BaseElement baseElement) {
+    public TransportElementDetails getTransportElementDetails(BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
         TransportElement element = getElementByBaseId(baseElement.getBaseElementId());
 
-        return mapElementDetails(baseElement, element);
+        return mapElementDetails(baseElement, element, passengerDetailsList);
     }
 
-    private static TransportElementDetails.Builder getBaseElementBuild(BaseElement baseElement, Integer order) {
+    private static TransportElementDetails.Builder getBaseElementBuild(BaseElement baseElement, Integer order, List<PassengerDetails> passengerDetailsList) {
         return new TransportElementDetails.Builder()
                 .baseElementID(baseElement.getBaseElementId())
                 .optionID(baseElement.getOption().getOptionId())
                 .lastUpdatedAt(baseElement.getLastUpdatedAt())
                 .elementType(baseElement.getElementType())
+                .elementCategory(baseElement.getElementCategory())
                 .link(baseElement.getLink())
                 .price(baseElement.getPrice())
                 .notes(baseElement.getNotes())
                 .status(baseElement.getStatus())
+                .status(baseElement.getStatus())
+                .passengerList(passengerDetailsList)
                 .order(order);
     }
 }

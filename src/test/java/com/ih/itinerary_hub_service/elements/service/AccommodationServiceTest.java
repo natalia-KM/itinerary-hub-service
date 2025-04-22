@@ -76,7 +76,7 @@ class AccommodationServiceTest {
         BaseElement baseElement = MockData.getNewBaseElement(UUID.randomUUID(), ElementType.ACCOMMODATION);
         when(accElementRepository.save(any())).thenThrow(new IllegalArgumentException());
 
-        assertThrows(DbFailure.class, () -> accommodationService.createElements(MockData.mockAccomRequest, baseElement));
+        assertThrows(DbFailure.class, () -> accommodationService.createElements(MockData.mockAccomRequest, baseElement, List.of()));
     }
 
     @Test
@@ -84,7 +84,7 @@ class AccommodationServiceTest {
         BaseElement baseElement = MockData.getNewBaseElement(UUID.randomUUID(), ElementType.ACCOMMODATION);
         when(accEventRepository.save(any())).thenThrow(new IllegalArgumentException());
 
-        assertThrows(DbFailure.class, () -> accommodationService.createElements(MockData.mockAccomRequest, baseElement));
+        assertThrows(DbFailure.class, () -> accommodationService.createElements(MockData.mockAccomRequest, baseElement, List.of()));
     }
 
     @Test
@@ -93,7 +93,7 @@ class AccommodationServiceTest {
         BaseElement baseElement = MockData.getNewBaseElement(baseElementID, ElementType.ACCOMMODATION);
         when(accElementRepository.getAccommElementByBaseId(baseElementID)).thenReturn(Optional.empty());
 
-        assertThrows(ElementDoesNotExist.class, () -> accommodationService.getAccommodationDetailsPair(baseElement));
+        assertThrows(ElementDoesNotExist.class, () -> accommodationService.getAccommodationDetailsPair(baseElement, List.of()));
     }
 
     @Test
@@ -107,7 +107,7 @@ class AccommodationServiceTest {
         when(accElementRepository.getAccommElementByBaseId(baseElementID)).thenReturn(Optional.of(accElement));
         when(accEventRepository.getAccommodationEventsByAccommodationId(elementID)).thenReturn(List.of());
 
-        assertThrows(ElementDoesNotExist.class, () -> accommodationService.getAccommodationDetailsPair(baseElement));
+        assertThrows(ElementDoesNotExist.class, () -> accommodationService.getAccommodationDetailsPair(baseElement, List.of()));
     }
 
     @Test
@@ -135,7 +135,7 @@ class AccommodationServiceTest {
         when(accElementRepository.getAccommElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(element));
 
         doThrow(IllegalArgumentException.class).when(accElementRepository).save(element);
-        assertThrows(DbFailure.class, () -> accommodationService.updateAccommodationElements(request, baseElement));
+        assertThrows(DbFailure.class, () -> accommodationService.updateAccommodationElements(request, baseElement, List.of()));
     }
 
     @Test
@@ -151,7 +151,7 @@ class AccommodationServiceTest {
         when(accEventRepository.getAccommodationEventsByAccommodationIdAndType(randomUUID, AccommodationType.CHECK_OUT)).thenReturn(Optional.of(checkOut));
 
         doThrow(IllegalArgumentException.class).when(accEventRepository).save(checkIn);
-        assertThrows(DbFailure.class, () -> accommodationService.updateAccommodationElements(request, baseElement));
+        assertThrows(DbFailure.class, () -> accommodationService.updateAccommodationElements(request, baseElement, List.of()));
     }
 
     @Test
@@ -166,7 +166,7 @@ class AccommodationServiceTest {
         when(accEventRepository.getAccommodationEventsByAccommodationIdAndType(randomUUID, AccommodationType.CHECK_IN)).thenReturn(Optional.of(checkIn));
         when(accEventRepository.getAccommodationEventsByAccommodationIdAndType(randomUUID, AccommodationType.CHECK_OUT)).thenReturn(Optional.of(checkOut));
 
-        List<AccommodationElementDetails> result = accommodationService.updateAccommodationElements(request, baseElement);
+        List<AccommodationElementDetails> result = accommodationService.updateAccommodationElements(request, baseElement, List.of());
 
         assertNotNull(result);
         assertEquals(element.getPlace(), result.get(0).getPlace());
@@ -204,7 +204,7 @@ class AccommodationServiceTest {
         when(accEventRepository.getAccommodationEventsByAccommodationIdAndType(randomUUID, AccommodationType.CHECK_IN)).thenReturn(Optional.of(checkIn));
         when(accEventRepository.getAccommodationEventsByAccommodationIdAndType(randomUUID, AccommodationType.CHECK_OUT)).thenReturn(Optional.of(checkOut));
 
-        List<AccommodationElementDetails> result = accommodationService.updateAccommodationElements(request, baseElement);
+        List<AccommodationElementDetails> result = accommodationService.updateAccommodationElements(request, baseElement, List.of());
 
         assertNotNull(result);
         assertEquals(request.getPlace(), result.get(0).getPlace());
@@ -242,7 +242,7 @@ class AccommodationServiceTest {
         when(accEventRepository.getAccommodationEventsByAccommodationIdAndType(randomUUID, AccommodationType.CHECK_IN)).thenReturn(Optional.of(checkIn));
         when(accEventRepository.getAccommodationEventsByAccommodationIdAndType(randomUUID, AccommodationType.CHECK_OUT)).thenReturn(Optional.of(checkOut));
 
-        List<AccommodationElementDetails> result = accommodationService.updateAccommodationElements(request, baseElement);
+        List<AccommodationElementDetails> result = accommodationService.updateAccommodationElements(request, baseElement, List.of());
 
         assertNotNull(result);
         assertEquals(element.getPlace(), result.get(0).getPlace());
@@ -272,7 +272,7 @@ class AccommodationServiceTest {
         when(accElementRepository.getAccommElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(element));
         when(accEventRepository.getAccommodationEventsByAccommodationIdAndType(randomUUID, AccommodationType.CHECK_IN)).thenReturn(Optional.empty());
 
-        assertThrows(ElementDoesNotExist.class, () -> accommodationService.getSingleAccommodationDetailsElement(baseElement, AccommodationType.CHECK_IN));
+        assertThrows(ElementDoesNotExist.class, () -> accommodationService.getSingleAccommodationDetailsElement(baseElement, AccommodationType.CHECK_IN, List.of()));
     }
 
     @Test
@@ -280,6 +280,6 @@ class AccommodationServiceTest {
         when(accElementRepository.getAccommElementByBaseId(baseElement.getBaseElementId())).thenReturn(Optional.of(element));
         when(accEventRepository.getAccommodationEventsByAccommodationIdAndType(randomUUID, AccommodationType.CHECK_IN)).thenReturn(Optional.of(checkOut));
 
-        assertThrows(ElementDoesNotExist.class, () -> accommodationService.getSingleAccommodationDetailsElement(baseElement, AccommodationType.CHECK_IN));
+        assertThrows(ElementDoesNotExist.class, () -> accommodationService.getSingleAccommodationDetailsElement(baseElement, AccommodationType.CHECK_IN, List.of()));
     }
 }

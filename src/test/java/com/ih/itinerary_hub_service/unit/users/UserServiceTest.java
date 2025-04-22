@@ -1,5 +1,6 @@
 package com.ih.itinerary_hub_service.unit.users;
 
+import com.ih.itinerary_hub_service.passengers.service.GlobalPassengersService;
 import com.ih.itinerary_hub_service.users.exceptions.UserNotFoundException;
 import com.ih.itinerary_hub_service.users.persistence.entity.User;
 import com.ih.itinerary_hub_service.users.persistence.repository.UserRepository;
@@ -22,6 +23,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+
+    @Mock
+    private GlobalPassengersService passengersService;
 
     @Mock
     private UserRepository userRepository;
