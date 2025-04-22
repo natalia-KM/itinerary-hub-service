@@ -230,6 +230,7 @@ public class AccommodationService {
         AccommodationElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, accommodationEvent.getElementOrder(), passengerDetailsList);
 
         return baseElementBuild
+                        .elementID(accommodationEvent.getEventId()) // as elementID is not unique per a pair of accommodation elements, event ID is returned instead
                         .place(element.getPlace())
                         .location(element.getLocation())
                         .accommodationType(accommodationEvent.getType())

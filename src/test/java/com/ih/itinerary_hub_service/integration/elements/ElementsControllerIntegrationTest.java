@@ -312,6 +312,7 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
             String expectedResponse = """
                         {
                           "baseElementID": "4e52ae05-06dc-423f-b86f-51a00cb8c452",
+                          "elementID": "674a2a9c-2dc5-4d00-a9ee-e4f051a17194",
                           "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
                           "lastUpdatedAt": "2022-05-12T00:00:00",
                           "elementType": "TRANSPORT",
@@ -370,23 +371,24 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
         @Test
         void shouldGetActivityElement() throws Exception {
             String expectedResponse = """
-                        {
-                          "baseElementID": "b647b387-31ad-4ffb-a9d2-91551d4b3138",
-                          "optionID": "eb7fd861-6dba-4893-a4c8-bac1bd5a47ba",
-                          "lastUpdatedAt": "2022-05-20T22:00:00",
-                          "elementType": "ACTIVITY",
-                          "elementCategory": "Restaurant",
-                          "link": null,
-                          "price": 1000,
-                          "notes": null,
-                          "status": "BOOKED",
-                          "order": 1,
-                          "passengerDetailsList": [],
-                          "activityName": "Escape Room",
-                          "location": "Paris, Street 2",
-                          "startsAt": "2022-05-15T13:00:00",
-                          "duration": 120
-                        }
+                       {
+                         "baseElementID": "b647b387-31ad-4ffb-a9d2-91551d4b3138",
+                         "elementID": "82c24ee6-075f-4d8c-913d-1d06f325fd43",
+                         "optionID": "eb7fd861-6dba-4893-a4c8-bac1bd5a47ba",
+                         "lastUpdatedAt": "2022-05-20T22:00:00",
+                         "elementType": "ACTIVITY",
+                         "elementCategory": "Restaurant",
+                         "link": null,
+                         "price": 1000,
+                         "notes": null,
+                         "status": "BOOKED",
+                         "order": 1,
+                         "passengerDetailsList": [],
+                         "activityName": "Escape Room",
+                         "location": "Paris, Street 2",
+                         "startsAt": "2022-05-15T13:00:00",
+                         "duration": 120
+                       }
                     """;
 
             mockMvc.perform(MockMvcRequestBuilders.get(
@@ -404,36 +406,37 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
         @Test
         void shouldGetAccommElement() throws Exception {
             String expectedResponse = """
-                        {
-                          "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
-                          "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
-                          "lastUpdatedAt": "2022-05-15T00:00:00",
-                          "elementType": "ACCOMMODATION",
-                          "elementCategory": "Hotel",
-                          "link": "https://book-hotel.ih/",
-                          "price": null,
-                          "notes": null,
-                          "status": null,
-                          "order": 1,
-                          "passengerDetailsList": [
-                            {
-                              "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
-                              "firstName": "Clara",
-                              "lastName": "Nguyen",
-                              "avatar": "fox"
-                            },
-                            {
-                              "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
-                              "firstName": "Ethan",
-                              "lastName": "Brown",
-                              "avatar": "turtle"
-                            }
-                          ],
-                          "place": "Hotel Name",
-                          "location": "Paris, Some Street",
-                          "accommodationType": "CHECK_IN",
-                          "dateTime": "2022-05-12T12:30:00"
-                        }
+                       {
+                         "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
+                         "elementID": "0347f675-1040-461c-b3ec-af80a0910850",
+                         "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                         "lastUpdatedAt": "2022-05-15T00:00:00",
+                         "elementType": "ACCOMMODATION",
+                         "elementCategory": "Hotel",
+                         "link": "https://book-hotel.ih/",
+                         "price": null,
+                         "notes": null,
+                         "status": null,
+                         "order": 1,
+                         "passengerDetailsList": [
+                           {
+                             "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                             "firstName": "Clara",
+                             "lastName": "Nguyen",
+                             "avatar": "fox"
+                           },
+                           {
+                             "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
+                             "firstName": "Ethan",
+                             "lastName": "Brown",
+                             "avatar": "turtle"
+                           }
+                         ],
+                         "place": "Hotel Name",
+                         "location": "Paris, Some Street",
+                         "accommodationType": "CHECK_IN",
+                         "dateTime": "2022-05-12T12:30:00"
+                       }
                     """;
 
             mockMvc.perform(MockMvcRequestBuilders.get(
@@ -543,111 +546,114 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
         @Test
         void shouldGetAllElementsInAnOption() throws Exception {
             String expectedResponse = """
-                       [
-                         {
-                           "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
-                           "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
-                           "lastUpdatedAt": "2022-05-15T00:00:00",
-                           "elementType": "ACCOMMODATION",
-                           "elementCategory": "Hotel",
-                           "link": "https://book-hotel.ih/",
-                           "price": null,
-                           "notes": null,
-                           "status": null,
-                           "order": 1,
-                           "passengerDetailsList": [
-                             {
-                               "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
-                               "firstName": "Clara",
-                               "lastName": "Nguyen",
-                               "avatar": "fox"
-                             },
-                             {
-                               "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
-                               "firstName": "Ethan",
-                               "lastName": "Brown",
-                               "avatar": "turtle"
-                             }
-                           ],
-                           "place": "Hotel Name",
-                           "location": "Paris, Some Street",
-                           "accommodationType": "CHECK_IN",
-                           "dateTime": "2022-05-12T12:30:00"
-                         },
-                         {
-                           "baseElementID": "4e52ae05-06dc-423f-b86f-51a00cb8c452",
-                           "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
-                           "lastUpdatedAt": "2022-05-12T00:00:00",
-                           "elementType": "TRANSPORT",
-                           "elementCategory": "Flight",
-                           "link": null,
-                           "price": 23.45,
-                           "notes": "Notes",
-                           "status": "PENDING",
-                           "order": 2,
-                           "passengerDetailsList": [
-                             {
-                               "passengerId": "0e85075f-be86-4b31-96ec-08feea54fb0e",
-                               "firstName": "John",
-                               "lastName": "Doe",
-                               "avatar": "dog"
-                             },
-                             {
-                               "passengerId": "3c2c02d3-8a7f-4a1c-94bb-4cce3e9b90c1",
-                               "firstName": "Alice",
-                               "lastName": "Smith",
-                               "avatar": "cat"
-                             },
-                             {
-                               "passengerId": "e0a5409f-6b9e-4f2c-8418-a9275aa4ae52",
-                               "firstName": "Bob",
-                               "lastName": "Johnson",
-                               "avatar": "parrot"
-                             },
-                             {
-                               "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
-                               "firstName": "Clara",
-                               "lastName": "Nguyen",
-                               "avatar": "fox"
-                             }
-                           ],
-                           "originPlace": "London Heathrow",
-                           "destinationPlace": "Paris",
-                           "originDateTime": "2022-05-12T00:00:00",
-                           "destinationDateTime": "2022-05-15T12:00:00",
-                           "provider": null
-                         },
-                         {
-                           "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
-                           "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
-                           "lastUpdatedAt": "2022-05-15T00:00:00",
-                           "elementType": "ACCOMMODATION",
-                           "elementCategory": "Hotel",
-                           "link": "https://book-hotel.ih/",
-                           "price": null,
-                           "notes": null,
-                           "status": null,
-                           "order": 3,
-                           "passengerDetailsList": [
-                             {
-                               "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
-                               "firstName": "Clara",
-                               "lastName": "Nguyen",
-                               "avatar": "fox"
-                             },
-                             {
-                               "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
-                               "firstName": "Ethan",
-                               "lastName": "Brown",
-                               "avatar": "turtle"
-                             }
-                           ],
-                           "place": "Hotel Name",
-                           "location": "Paris, Some Street",
-                           "accommodationType": "CHECK_OUT",
-                           "dateTime": "2022-05-13T14:00:00"
-                         }
-                       ]
+                    [
+                      {
+                        "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
+                        "elementID": "0347f675-1040-461c-b3ec-af80a0910850",
+                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                        "lastUpdatedAt": "2022-05-15T00:00:00",
+                        "elementType": "ACCOMMODATION",
+                        "elementCategory": "Hotel",
+                        "link": "https://book-hotel.ih/",
+                        "price": null,
+                        "notes": null,
+                        "status": null,
+                        "order": 1,
+                        "passengerDetailsList": [
+                          {
+                            "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                            "firstName": "Clara",
+                            "lastName": "Nguyen",
+                            "avatar": "fox"
+                          },
+                          {
+                            "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
+                            "firstName": "Ethan",
+                            "lastName": "Brown",
+                            "avatar": "turtle"
+                          }
+                        ],
+                        "place": "Hotel Name",
+                        "location": "Paris, Some Street",
+                        "accommodationType": "CHECK_IN",
+                        "dateTime": "2022-05-12T12:30:00"
+                      },
+                      {
+                        "baseElementID": "4e52ae05-06dc-423f-b86f-51a00cb8c452",
+                        "elementID": "674a2a9c-2dc5-4d00-a9ee-e4f051a17194",
+                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                        "lastUpdatedAt": "2022-05-12T00:00:00",
+                        "elementType": "TRANSPORT",
+                        "elementCategory": "Flight",
+                        "link": null,
+                        "price": 23.45,
+                        "notes": "Notes",
+                        "status": "PENDING",
+                        "order": 2,
+                        "passengerDetailsList": [
+                          {
+                            "passengerId": "0e85075f-be86-4b31-96ec-08feea54fb0e",
+                            "firstName": "John",
+                            "lastName": "Doe",
+                            "avatar": "dog"
+                          },
+                          {
+                            "passengerId": "3c2c02d3-8a7f-4a1c-94bb-4cce3e9b90c1",
+                            "firstName": "Alice",
+                            "lastName": "Smith",
+                            "avatar": "cat"
+                          },
+                          {
+                            "passengerId": "e0a5409f-6b9e-4f2c-8418-a9275aa4ae52",
+                            "firstName": "Bob",
+                            "lastName": "Johnson",
+                            "avatar": "parrot"
+                          },
+                          {
+                            "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                            "firstName": "Clara",
+                            "lastName": "Nguyen",
+                            "avatar": "fox"
+                          }
+                        ],
+                        "originPlace": "London Heathrow",
+                        "destinationPlace": "Paris",
+                        "originDateTime": "2022-05-12T00:00:00",
+                        "destinationDateTime": "2022-05-15T12:00:00",
+                        "provider": null
+                      },
+                      {
+                        "baseElementID": "e4f56f0d-01ab-4ddb-be38-486ebefc4ede",
+                        "elementID": "f8876598-c138-4bd1-8055-5294bda159be",
+                        "optionID": "0d78ebf0-0159-4843-b54b-a696644f26fc",
+                        "lastUpdatedAt": "2022-05-15T00:00:00",
+                        "elementType": "ACCOMMODATION",
+                        "elementCategory": "Hotel",
+                        "link": "https://book-hotel.ih/",
+                        "price": null,
+                        "notes": null,
+                        "status": null,
+                        "order": 3,
+                        "passengerDetailsList": [
+                          {
+                            "passengerId": "d2f9a4d1-33f6-40cf-b46d-9b81f3c0a15f",
+                            "firstName": "Clara",
+                            "lastName": "Nguyen",
+                            "avatar": "fox"
+                          },
+                          {
+                            "passengerId": "ba9d1df2-99b1-4df4-ae00-c5d9ef6e5f57",
+                            "firstName": "Ethan",
+                            "lastName": "Brown",
+                            "avatar": "turtle"
+                          }
+                        ],
+                        "place": "Hotel Name",
+                        "location": "Paris, Some Street",
+                        "accommodationType": "CHECK_OUT",
+                        "dateTime": "2022-05-13T14:00:00"
+                      }
+                    ]
                     """;
 
             mockMvc.perform(MockMvcRequestBuilders.get(

@@ -1147,6 +1147,124 @@
         }
       }
     },
+    "/v1/passengers/{passengerId}": {
+      "get": {
+        "tags": [
+          "passenger-controller"
+        ],
+        "summary": "Get passenger by ID",
+        "operationId": "getPassengerDetails",
+        "parameters": [
+          {
+            "name": "passengerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Passenger retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassengerDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "passenger-controller"
+        ],
+        "summary": "Update passenger",
+        "operationId": "updatePassengerDetails",
+        "parameters": [
+          {
+            "name": "passengerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PassengerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Passenger updated"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "passenger-controller"
+        ],
+        "summary": "Delete passenger",
+        "operationId": "deletePassenger",
+        "parameters": [
+          {
+            "name": "passengerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Passenger deleted"
+          }
+        }
+      }
+    },
     "/v1/elements/{baseElementId}": {
       "put": {
         "tags": [
@@ -1540,6 +1658,79 @@
         }
       }
     },
+    "/v1/passengers": {
+      "get": {
+        "tags": [
+          "passenger-controller"
+        ],
+        "summary": "Get all passengers in the account",
+        "operationId": "getPassengers",
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "All passengers retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PassengerDetails"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "passenger-controller"
+        ],
+        "summary": "Create passenger",
+        "operationId": "createPassenger",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePassengerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Passenger created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassengerDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/trips/{tripId}/details": {
       "get": {
         "tags": [
@@ -1575,6 +1766,51 @@
               "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/TripDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/options/{optionId}/elements": {
+      "get": {
+        "tags": [
+          "elements-controller"
+        ],
+        "summary": "Get transport element",
+        "operationId": "getElements",
+        "parameters": [
+          {
+            "name": "optionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Element retrieved",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BaseElementDetails"
+                  }
                 }
               }
             }
@@ -1798,6 +2034,9 @@
               "ACCOMMODATION"
             ]
           },
+          "elementCategory": {
+            "type": "string"
+          },
           "link": {
             "type": "string"
           },
@@ -1815,6 +2054,13 @@
               "CANCELLED",
               "EXPIRED"
             ]
+          },
+          "passengerIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         }
       },
@@ -1847,10 +2093,32 @@
           }
         }
       },
+      "PassengerDetails": {
+        "type": "object",
+        "properties": {
+          "passengerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          }
+        }
+      },
       "TransportElementDetails": {
         "type": "object",
         "properties": {
           "baseElementID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "elementID": {
             "type": "string",
             "format": "uuid"
           },
@@ -1869,6 +2137,9 @@
               "TRANSPORT",
               "ACCOMMODATION"
             ]
+          },
+          "elementCategory": {
+            "type": "string"
           },
           "link": {
             "type": "string"
@@ -1891,6 +2162,12 @@
           "order": {
             "type": "integer",
             "format": "int32"
+          },
+          "passengerDetailsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PassengerDetails"
+            }
           },
           "originPlace": {
             "type": "string"
@@ -1944,6 +2221,10 @@
             "type": "string",
             "format": "uuid"
           },
+          "elementID": {
+            "type": "string",
+            "format": "uuid"
+          },
           "optionID": {
             "type": "string",
             "format": "uuid"
@@ -1959,6 +2240,9 @@
               "TRANSPORT",
               "ACCOMMODATION"
             ]
+          },
+          "elementCategory": {
+            "type": "string"
           },
           "link": {
             "type": "string"
@@ -1981,6 +2265,12 @@
           "order": {
             "type": "integer",
             "format": "int32"
+          },
+          "passengerDetailsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PassengerDetails"
+            }
           },
           "activityName": {
             "type": "string"
@@ -2038,6 +2328,10 @@
             "type": "string",
             "format": "uuid"
           },
+          "elementID": {
+            "type": "string",
+            "format": "uuid"
+          },
           "optionID": {
             "type": "string",
             "format": "uuid"
@@ -2053,6 +2347,9 @@
               "TRANSPORT",
               "ACCOMMODATION"
             ]
+          },
+          "elementCategory": {
+            "type": "string"
           },
           "link": {
             "type": "string"
@@ -2076,6 +2373,12 @@
             "type": "integer",
             "format": "int32"
           },
+          "passengerDetailsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PassengerDetails"
+            }
+          },
           "place": {
             "type": "string"
           },
@@ -2092,6 +2395,20 @@
           "dateTime": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "PassengerRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
           }
         }
       },
@@ -2194,6 +2511,25 @@
           "order"
         ]
       },
+      "CreatePassengerRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "avatar",
+          "firstName",
+          "lastName"
+        ]
+      },
       "TripDetails": {
         "type": "object",
         "properties": {
@@ -2228,6 +2564,10 @@
             "type": "string",
             "format": "uuid"
           },
+          "elementID": {
+            "type": "string",
+            "format": "uuid"
+          },
           "optionID": {
             "type": "string",
             "format": "uuid"
@@ -2243,6 +2583,9 @@
               "TRANSPORT",
               "ACCOMMODATION"
             ]
+          },
+          "elementCategory": {
+            "type": "string"
           },
           "link": {
             "type": "string"
@@ -2265,6 +2608,12 @@
           "order": {
             "type": "integer",
             "format": "int32"
+          },
+          "passengerDetailsList": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PassengerDetails"
+            }
           }
         }
       },

@@ -11,10 +11,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Accommodation elements share the same baseElementID and elementID,
+ * so the frontend cannot distinguish between two different accommodation elements
+ * unless an optional enum is provided.
+ *
+ * Therefore, BaseElementDetails returns elementID, which—**in the case of accommodation elements**—
+ * serves as an event ID that is unique for each element.
+ *
+ * For other element types, elementID refers to the actual element ID.
+* */
+
 @Getter
 @Setter
 public abstract class BaseElementDetails {
     private UUID baseElementID;
+    private UUID elementID;
     private UUID optionID;
     private LocalDateTime lastUpdatedAt;
     private ElementType elementType;
@@ -30,6 +42,7 @@ public abstract class BaseElementDetails {
         BaseElementDetailsBuilder<?> builder
     ) {
         this.baseElementID = builder.baseElementID;
+        this.elementID = builder.elementID;
         this.optionID = builder.optionID;
         this.lastUpdatedAt = builder.lastUpdatedAt;
         this.elementType = builder.elementType;
@@ -44,6 +57,7 @@ public abstract class BaseElementDetails {
 
     public static abstract class BaseElementDetailsBuilder<T extends BaseElementDetailsBuilder<T>> {
         private UUID baseElementID;
+        private UUID elementID;
         private UUID optionID;
         private LocalDateTime lastUpdatedAt;
         private ElementType elementType;
@@ -57,6 +71,11 @@ public abstract class BaseElementDetails {
 
         public T baseElementID(UUID baseElementID) {
             this.baseElementID = baseElementID;
+            return self();
+        }
+
+        public T elementID(UUID elementID) {
+            this.elementID = elementID;
             return self();
         }
 

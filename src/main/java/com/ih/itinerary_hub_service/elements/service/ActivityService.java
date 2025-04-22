@@ -117,6 +117,7 @@ public class ActivityService {
         ActivityElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, element.getElementOrder(), passengerDetailsList);
 
         return baseElementBuild
+                .elementID(element.getElementId())
                 .activityName(element.getActivityName())
                 .location(element.getLocation())
                 .startsAt(element.getStartsAt())

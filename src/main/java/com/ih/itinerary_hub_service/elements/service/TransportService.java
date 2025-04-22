@@ -127,6 +127,7 @@ public class TransportService {
         TransportElementDetails.Builder baseElementBuild = getBaseElementBuild(baseElement, element.getElementOrder(), passengerDetailsList);
 
         return baseElementBuild
+                .elementID(element.getElementId())
                 .originPlace(element.getOriginPlace())
                 .destinationPlace(element.getDestinationPlace())
                 .originDateTime(element.getOriginDateTime())
