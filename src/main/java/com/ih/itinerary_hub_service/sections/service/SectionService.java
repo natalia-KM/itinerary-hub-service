@@ -3,7 +3,6 @@ package com.ih.itinerary_hub_service.sections.service;
 import com.ih.itinerary_hub_service.dto.OptionDTO;
 import com.ih.itinerary_hub_service.dto.SectionDTO;
 import com.ih.itinerary_hub_service.exceptions.DbFailure;
-import com.ih.itinerary_hub_service.options.responses.OptionDetails;
 import com.ih.itinerary_hub_service.options.service.OptionsService;
 import com.ih.itinerary_hub_service.sections.exceptions.CreateSectionInvalidRequest;
 import com.ih.itinerary_hub_service.sections.exceptions.SectionNotFound;
@@ -55,6 +54,9 @@ public class SectionService {
         try {
             sectionsRepository.save(newSection);
             log.info("Section created: {}", sectionId);
+
+            optionsService.initializeTripOption(newSection);
+
             return mapSectionDetails(newSection);
         } catch (Exception e) {
             log.error("Failed to create a section: {}", e.getMessage());

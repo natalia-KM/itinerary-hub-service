@@ -3,6 +3,7 @@ package com.ih.itinerary_hub_service.trips.service;
 import com.ih.itinerary_hub_service.dto.SectionDTO;
 import com.ih.itinerary_hub_service.dto.TripDTO;
 import com.ih.itinerary_hub_service.exceptions.DbFailure;
+import com.ih.itinerary_hub_service.sections.requests.CreateSectionRequest;
 import com.ih.itinerary_hub_service.sections.service.SectionService;
 import com.ih.itinerary_hub_service.trips.exceptions.TripNotFound;
 import com.ih.itinerary_hub_service.trips.persistence.entity.Trip;
@@ -84,6 +85,9 @@ public class TripsService {
             log.error("Failed to create a trip: {}", e.getMessage());
             throw new DbFailure("Failed to create a trip");
         }
+
+        CreateSectionRequest sectionRequest = new CreateSectionRequest("Section 1", 1);
+        sectionService.createSection(newTrip, sectionRequest);
     }
 
     public void updateTrip(UUID userId, UUID tripId, UpdateTripRequest request) {
