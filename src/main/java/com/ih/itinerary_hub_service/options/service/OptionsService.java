@@ -34,6 +34,11 @@ public class OptionsService {
         this.elementsService = elementsService;
     }
 
+    public void initializeTripOption(Section existingSection) {
+        CreateOptionRequest request = new CreateOptionRequest("Option 1", 1);
+        createOption(existingSection, request);
+    }
+
     public OptionDetails createOption(Section existingSection, CreateOptionRequest request) {
         if(request.order() == null || request.order() < 0) {
             throw new CreateOptionInvalidRequest("Order cannot be null");
