@@ -62,6 +62,7 @@ public class UserController {
                 user.getFirstName(),
                 user.getLastName(),
                 user.isGuest(),
+                user.getCreatedAt(),
                 Optional.ofNullable(user.getCurrency())
         );
     }
@@ -76,6 +77,7 @@ public class UserController {
                 user.getFirstName(),
                 user.getLastName(),
                 user.isGuest(),
+                user.getCreatedAt(),
                 Optional.ofNullable(user.getCurrency())
         );
     }
