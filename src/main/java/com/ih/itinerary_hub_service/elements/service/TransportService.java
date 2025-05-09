@@ -1,6 +1,7 @@
 package com.ih.itinerary_hub_service.elements.service;
 
 import com.ih.itinerary_hub_service.elements.exceptions.ElementDoesNotExist;
+import com.ih.itinerary_hub_service.elements.model.BaseElementDetails;
 import com.ih.itinerary_hub_service.elements.model.TransportElementDetails;
 import com.ih.itinerary_hub_service.elements.persistence.entity.BaseElement;
 import com.ih.itinerary_hub_service.elements.persistence.entity.TransportElement;
@@ -45,6 +46,18 @@ public class TransportService {
             return mapElementDetails(baseElement, transportElement, passengerDetailsList);
         } catch (Exception e) {
             log.error("Failed to save transport element, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
+    public void updateElementOrderByElementId(Integer order, UUID elementId) {
+        TransportElement transportElement = getElementByElementId(elementId);
+        transportElement.setElementOrder(order);
+
+        try {
+            transportRepository.save(transportElement);
+        } catch (Exception e) {
+            log.error("Failed to update transport element order, {}", e.getMessage());
             throw new DbFailure(e.getMessage());
         }
     }
@@ -120,6 +133,14 @@ public class TransportService {
                 .orElseThrow(() -> {
                     log.error("Couldn't find an element with base ID: {}", baseElementID);
                     return new ElementDoesNotExist("Couldn't find an element with base ID: " + baseElementID);
+                });
+    }
+
+    public TransportElement getElementByElementId(UUID elementId) {
+        return transportRepository.findById(elementId)
+                .orElseThrow(() -> {
+                    log.error("Couldn't find an element with element ID: {}", elementId);
+                    return new ElementDoesNotExist("Couldn't find an element with element ID: " + elementId);
                 });
     }
 

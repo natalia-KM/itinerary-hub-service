@@ -8,16 +8,14 @@ import com.ih.itinerary_hub_service.elements.model.BaseElementDetails;
 import com.ih.itinerary_hub_service.elements.model.TransportElementDetails;
 import com.ih.itinerary_hub_service.elements.persistence.entity.BaseElement;
 import com.ih.itinerary_hub_service.elements.persistence.repository.BaseElementRepository;
-import com.ih.itinerary_hub_service.elements.requests.AccommodationElementRequest;
-import com.ih.itinerary_hub_service.elements.requests.ActivityElementRequest;
-import com.ih.itinerary_hub_service.elements.requests.BaseElementRequest;
-import com.ih.itinerary_hub_service.elements.requests.TransportElementRequest;
+import com.ih.itinerary_hub_service.elements.requests.*;
 import com.ih.itinerary_hub_service.elements.types.AccommodationType;
 import com.ih.itinerary_hub_service.elements.types.ElementType;
 import com.ih.itinerary_hub_service.exceptions.DbFailure;
 import com.ih.itinerary_hub_service.options.persistence.entity.Option;
 import com.ih.itinerary_hub_service.passengers.responses.PassengerDetails;
 import com.ih.itinerary_hub_service.passengers.service.GlobalPassengersService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +84,19 @@ public class ElementsService {
         return accommodationService.createElements(request, baseElement, passengerDetailsList);
     }
 
+    // FE sends event ID for accommodation elements
+    public void bulkUpdateOrder(List<ElementOrderUpdateRequest> updateRequests) {
+        for (ElementOrderUpdateRequest update : updateRequests) {
+
+            switch (update.elementType()) {
+                case TRANSPORT -> transportService.updateElementOrderByElementId(update.order(), update.elementId());
+                case ACTIVITY -> activityService.updateElementOrderByElementId(update.order(), update.elementId());
+                case ACCOMMODATION ->
+                        accommodationService.updateElementOrderByEventId(update.order(), update.elementId());
+            }
+        }
+    }
+
     public TransportElementDetails getTransportElementById(Option option, UUID baseElementId) {
         BaseElement baseElement = getBaseElement(option, baseElementId);
         List<PassengerDetails> passengerDetailsList = passengersService.getAllPassengersInElement(baseElement);
@@ -104,6 +115,17 @@ public class ElementsService {
             throw new InvalidElementRequest("Invalid request");
         }
         return activityService.getElementDetailsByID(baseElement, passengerDetailsList);
+    }
+
+    public List<BaseElementDetails> getElement(Option option, UUID baseElementId) {
+        BaseElement baseElement = getBaseElement(option, baseElementId);
+        List<PassengerDetails> passengerDetailsList = passengersService.getAllPassengersInElement(baseElement);
+
+        return switch (baseElement.getElementType()) {
+            case ACTIVITY -> List.of(activityService.getElementDetailsByID(baseElement, passengerDetailsList));
+            case TRANSPORT -> List.of(transportService.getTransportElementDetails(baseElement, passengerDetailsList));
+            case ACCOMMODATION -> accommodationService.getElementDetails(baseElement, passengerDetailsList);
+        };
     }
 
     public AccommodationElementDetails getAccommElementById(Option option, UUID baseElementId, AccommodationType type) {
@@ -170,12 +192,8 @@ public class ElementsService {
         }
     }
 
+    @Transactional
     public void deleteElement(Option option, UUID baseElementId, ElementType elType) {
-        switch (elType) {
-            case ACTIVITY: activityService.deleteElement(baseElementId); break;
-            case TRANSPORT: transportService.deleteElement(baseElementId); break;
-            case ACCOMMODATION: accommodationService.deleteElement(baseElementId); break;
-        }
 
         BaseElement baseElement = getBaseElement(option, baseElementId);
 

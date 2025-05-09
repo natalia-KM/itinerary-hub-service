@@ -3,6 +3,7 @@ package com.ih.itinerary_hub_service.elements.service;
 import com.ih.itinerary_hub_service.elements.exceptions.ElementDoesNotExist;
 import com.ih.itinerary_hub_service.elements.exceptions.InvalidElementRequest;
 import com.ih.itinerary_hub_service.elements.model.AccommodationElementDetails;
+import com.ih.itinerary_hub_service.elements.model.BaseElementDetails;
 import com.ih.itinerary_hub_service.elements.persistence.entity.AccommodationElement;
 import com.ih.itinerary_hub_service.elements.persistence.entity.AccommodationEvent;
 import com.ih.itinerary_hub_service.elements.persistence.entity.BaseElement;
@@ -77,6 +78,21 @@ public class AccommodationService {
         }
 
         return mapAccommodationElementDetails(accommodationElement, List.of(checkIn, checkOut), baseElement, passengerDetailsList);
+    }
+
+    public void updateElementOrderByEventId(Integer order, UUID elementId) {
+        AccommodationEvent existingEvent = getAccEventById(elementId);
+
+        existingEvent.setElementOrder(order);
+
+        try {
+            accommodationEventRepository.save(existingEvent);
+
+            log.info("Updated accommodation event order with id: {}", existingEvent.getEventId());
+        } catch (Exception e) {
+            log.error("Failed to update accommodation event order, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
     }
 
     public void updateElementOrder(Integer order, UUID baseElementID, Optional<AccommodationType> type) {
@@ -164,12 +180,16 @@ public class AccommodationService {
 
         try {
             accommodationEventRepository.deleteAll(accommodationEvents);
-            accommodationElementRepository.delete(accommodationElement);
             log.info("Deleted accommodation element with id {}", accommodationElement.getElementId());
         } catch (Exception e) {
             log.error("Failed to delete accommodation element, {}", e.getMessage());
             throw new DbFailure(e.getMessage());
         }
+    }
+
+    public List<BaseElementDetails> getElementDetails(BaseElement baseElement, List<PassengerDetails> passengerDetailsList) {
+        List<AccommodationElementDetails> accommodationDetails = getAccommodationDetailsPair(baseElement, passengerDetailsList);
+        return new ArrayList<>(accommodationDetails);
     }
 
 
@@ -194,6 +214,14 @@ public class AccommodationService {
             throw new ElementDoesNotExist("Couldn't find the matching accommodation events");
         }
         return event.get();
+    }
+
+    private AccommodationEvent getAccEventById(UUID accEventId) {
+        return accommodationEventRepository.findById(accEventId)
+                .orElseThrow(() -> {
+                    log.error("Couldn't find an element with event ID: {}", accEventId);
+                    return new ElementDoesNotExist("Couldn't find an element with event ID: " + accEventId);
+                });
     }
 
     private AccommodationElement getElementByBaseId(UUID baseElementID) {

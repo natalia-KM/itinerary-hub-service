@@ -47,6 +47,19 @@ public class ActivityService {
         }
     }
 
+    public void updateElementOrderByElementId(Integer order, UUID baseElementID) {
+        ActivityElement activityElement = getElementByElementId(baseElementID);
+        activityElement.setElementOrder(order);
+
+        try {
+            activityRepository.save(activityElement);
+        } catch (Exception e) {
+            log.error("Failed to update activity element order, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
+
     public void updateElementOrder(Integer order, UUID baseElementID) {
         ActivityElement activityElement = getElementById(baseElementID);
         activityElement.setElementOrder(order);
@@ -110,6 +123,14 @@ public class ActivityService {
                 .orElseThrow(() -> {
                     log.error("Couldn't find an element with base ID: {}", baseElementID);
                     return new ElementDoesNotExist("Couldn't find an element with base ID: " + baseElementID);
+                });
+    }
+
+    public ActivityElement getElementByElementId(UUID elementId) {
+        return activityRepository.findById(elementId)
+                .orElseThrow(() -> {
+                    log.error("Couldn't find an element with element ID: {}", elementId);
+                    return new ElementDoesNotExist("Couldn't find an element with element ID: " + elementId);
                 });
     }
 
