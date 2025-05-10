@@ -39,6 +39,7 @@ public class BaseIntegrationTest {
     protected static final String TRANSPORT_ELEMENT = "4e52ae05-06dc-423f-b86f-51a00cb8c452";
     protected static final String ACTIVITY_ELEMENT = "b647b387-31ad-4ffb-a9d2-91551d4b3138";
     protected static final String ACCOMMODATION_ELEMENT = "e4f56f0d-01ab-4ddb-be38-486ebefc4ede";
+    protected static final String ACCOMM_EVENT_ID = "0347f675-1040-461c-b3ec-af80a0910850";
 
     protected static final String PASSENGER_ONE = "0e85075f-be86-4b31-96ec-08feea54fb0e";
     protected static final String PASSENGER_TWO = "3c2c02d3-8a7f-4a1c-94bb-4cce3e9b90c1";

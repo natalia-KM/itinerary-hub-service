@@ -1,7 +1,6 @@
 package com.ih.itinerary_hub_service.elements.service;
 
 import com.ih.itinerary_hub_service.elements.exceptions.ElementDoesNotExist;
-import com.ih.itinerary_hub_service.elements.model.BaseElementDetails;
 import com.ih.itinerary_hub_service.elements.model.TransportElementDetails;
 import com.ih.itinerary_hub_service.elements.persistence.entity.BaseElement;
 import com.ih.itinerary_hub_service.elements.persistence.entity.TransportElement;
