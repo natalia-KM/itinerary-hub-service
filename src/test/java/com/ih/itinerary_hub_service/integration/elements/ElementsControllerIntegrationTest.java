@@ -14,6 +14,7 @@ import com.ih.itinerary_hub_service.passengers.persistence.repository.Passengers
 import com.ih.itinerary_hub_service.sections.persistence.repository.SectionsRepository;
 import com.ih.itinerary_hub_service.trips.persistence.repository.TripsRepository;
 import com.ih.itinerary_hub_service.users.persistence.repository.UserRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -478,7 +479,6 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(content().string("Invalid accommodation type: CHECK"));
         }
-
 
         @Test
         void shouldThrow_whenOptionDoesNotExist() throws Exception {
@@ -960,6 +960,62 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
     @Nested
     class UpdateOrder {
 
+        @Test
+        void bulkUpdateElementOrder() throws Exception {
+            // using element IDs
+            ElementOrderUpdateRequest transport = new ElementOrderUpdateRequest(
+                    UUID.fromString("674a2a9c-2dc5-4d00-a9ee-e4f051a17194"), ElementType.TRANSPORT, 4  // org 2
+            );
+            ElementOrderUpdateRequest activity = new ElementOrderUpdateRequest(
+                    UUID.fromString("82c24ee6-075f-4d8c-913d-1d06f325fd43"), ElementType.ACTIVITY, 3  // org 1
+            );
+            ElementOrderUpdateRequest accomm = new ElementOrderUpdateRequest(
+                    UUID.fromString(ACCOMM_EVENT_ID), ElementType.ACCOMMODATION, 2  // org 1
+            );
+
+            List<ElementOrderUpdateRequest> request = List.of(transport, activity, accomm);
+
+            mockMvc.perform(MockMvcRequestBuilders.put("/v1/elements")
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isNoContent());
+
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                                    BASE_ELEMENTS_URL + "/{baseElementId}/transport",
+                                    SECTION_ONE,
+                                    OPTION_ONE,
+                                    TRANSPORT_ELEMENT)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.order").value(4));
+
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                                    BASE_ELEMENTS_URL + "/{baseElementId}/accommodation?type=CHECK_IN",
+                                    SECTION_ONE,
+                                    OPTION_ONE,
+                                    ACCOMMODATION_ELEMENT)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.order").value(2));
+
+            mockMvc.perform(MockMvcRequestBuilders.get(
+                                    BASE_ELEMENTS_URL + "/{baseElementId}/activity",
+                                    SECTION_ONE,
+                                    OPTION_TWO,
+                                    ACTIVITY_ELEMENT)
+                            .cookie(guestUserAccessTokenCookie)
+                            .cookie(guestUserIdCookie)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.order").value(3));
+        }
+
         @ParameterizedTest
         @MethodSource("updateOrderRequestArgs")
         void shouldUpdateElementOrder(ElementType elementType, Optional<AccommodationType> accType, String baseElementId, String optionId) throws Exception {
@@ -1162,8 +1218,10 @@ class ElementsControllerIntegrationTest extends BaseIntegrationTest {
         }
     }
 
+    @Disabled("Need to find a new way to test it as the mock db doesn't have cascade")
     @Nested
     class DeleteElement {
+
 
         @ParameterizedTest
         @MethodSource("deleteElementArgs")

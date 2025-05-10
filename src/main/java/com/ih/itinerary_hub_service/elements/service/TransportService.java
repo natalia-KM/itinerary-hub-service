@@ -49,6 +49,18 @@ public class TransportService {
         }
     }
 
+    public void updateElementOrderByElementId(Integer order, UUID elementId) {
+        TransportElement transportElement = getElementByElementId(elementId);
+        transportElement.setElementOrder(order);
+
+        try {
+            transportRepository.save(transportElement);
+        } catch (Exception e) {
+            log.error("Failed to update transport element order, {}", e.getMessage());
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
     public void updateElementOrder(Integer order, UUID baseElementId) {
         TransportElement transportElement = getElementByBaseId(baseElementId);
         transportElement.setElementOrder(order);
@@ -120,6 +132,14 @@ public class TransportService {
                 .orElseThrow(() -> {
                     log.error("Couldn't find an element with base ID: {}", baseElementID);
                     return new ElementDoesNotExist("Couldn't find an element with base ID: " + baseElementID);
+                });
+    }
+
+    public TransportElement getElementByElementId(UUID elementId) {
+        return transportRepository.findById(elementId)
+                .orElseThrow(() -> {
+                    log.error("Couldn't find an element with element ID: {}", elementId);
+                    return new ElementDoesNotExist("Couldn't find an element with element ID: " + elementId);
                 });
     }
 

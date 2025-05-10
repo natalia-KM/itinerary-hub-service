@@ -68,7 +68,7 @@ public class SectionsController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "${sections.getSectionById.summary}")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Section retrieved")})
-    public void updateSection(
+    public void updateSectionOrder(
             @PathVariable UUID tripId,
             @RequestBody List<SectionDetails> sectionDetails
     ) {

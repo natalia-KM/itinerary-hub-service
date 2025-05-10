@@ -5,10 +5,7 @@ import com.ih.itinerary_hub_service.elements.model.AccommodationElementDetails;
 import com.ih.itinerary_hub_service.elements.model.ActivityElementDetails;
 import com.ih.itinerary_hub_service.elements.model.BaseElementDetails;
 import com.ih.itinerary_hub_service.elements.model.TransportElementDetails;
-import com.ih.itinerary_hub_service.elements.requests.AccommodationElementRequest;
-import com.ih.itinerary_hub_service.elements.requests.ActivityElementRequest;
-import com.ih.itinerary_hub_service.elements.requests.TransportElementRequest;
-import com.ih.itinerary_hub_service.elements.requests.UpdateElementOrderRequest;
+import com.ih.itinerary_hub_service.elements.requests.*;
 import com.ih.itinerary_hub_service.elements.service.ElementsService;
 import com.ih.itinerary_hub_service.elements.types.AccommodationType;
 import com.ih.itinerary_hub_service.elements.types.ElementType;
@@ -80,6 +77,16 @@ public class ElementsController {
         return elementsService.createAccommodationsElement(option, request);
     }
 
+    @PutMapping("elements")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "${elements.createAccommodation.summary}")
+    @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Elements updated")})
+    public void bulkUpdateElementsOrder(
+            @RequestBody List<ElementOrderUpdateRequest> request
+    ) {
+        elementsService.bulkUpdateOrder(request);
+    }
+
     @GetMapping("options/{optionId}/elements")
     @Operation(summary = "${elements.getTransport.summary}")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Element retrieved")})
@@ -87,6 +94,18 @@ public class ElementsController {
             @PathVariable UUID optionId
     ) {
         return elementsService.getElementsByIds(optionId);
+    }
+
+    @GetMapping("sections/{sectionId}/options/{optionId}/elements/{baseElementId}")
+    @Operation(summary = "${elements.getElement.summary}")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Element retrieved")})
+    public List<BaseElementDetails> getElement(
+            @PathVariable UUID optionId,
+            @PathVariable UUID sectionId,
+            @PathVariable UUID baseElementId
+    ) {
+        Option option = optionsService.getOption(optionId, sectionId);
+        return elementsService.getElement(option, baseElementId);
     }
 
     @GetMapping("sections/{sectionId}/options/{optionId}/elements/{baseElementId}/transport")
@@ -184,7 +203,7 @@ public class ElementsController {
     @DeleteMapping("sections/{sectionId}/options/{optionId}/elements/{baseElementId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "${elements.deleteElement.summary}")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Element updated")})
+    @ApiResponses(value = { @ApiResponse(responseCode = "204", description = "Element deleted")})
     public void deleteElement(
             @PathVariable UUID optionId,
             @PathVariable UUID sectionId,
