@@ -219,4 +219,19 @@ public class ElementsController {
 
         elementsService.deleteElement(option, baseElementId, elementType);
     }
+
+    @PutMapping("sections/{sectionId}/options/{optionId}/elements/{baseElementId}")
+    @Operation(summary = "${elements.updateOption.summary}")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Element updated")})
+    public void moveElementToOption(
+            @PathVariable UUID optionId,
+            @PathVariable UUID sectionId,
+            @PathVariable UUID baseElementId,
+            @Valid @RequestBody MoveElementRequest request
+    ) {
+        Option currentOption = optionsService.getOption(optionId, sectionId);
+        Option newOption = optionsService.getOption(request.newOptionId(), request.newSectionId());
+
+        elementsService.moveElementToDifferentOption(baseElementId, currentOption, newOption, request.elementType(), request.accommodationType());
+    }
 }

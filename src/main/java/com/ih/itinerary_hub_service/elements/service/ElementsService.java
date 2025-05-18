@@ -230,6 +230,27 @@ public class ElementsService {
                 .collect(Collectors.toList());
     }
 
+    public void moveElementToDifferentOption(UUID baseElementId, Option currentOption, Option newOption, ElementType elementType, Optional<AccommodationType> accommodationType) {
+        BaseElement baseElement = getBaseElement(currentOption, baseElementId);
+
+        int newOrder = baseElementRepository.countByOptionId(newOption.getOptionId()) + 1;
+
+        switch (elementType) {
+            case ACTIVITY -> activityService.updateElementOrder(newOrder, baseElementId);
+            case TRANSPORT -> transportService.updateElementOrder(newOrder, baseElementId);
+            case ACCOMMODATION -> accommodationService.updateElementOrder(newOrder, baseElementId, accommodationType);
+        }
+
+        baseElement.setOption(newOption);
+
+        try {
+            baseElementRepository.save(baseElement);
+        } catch (Exception e) {
+            log.error("Failed to update element with id {}", baseElementId);
+            throw new DbFailure(e.getMessage());
+        }
+    }
+
     private BaseElement getBaseElement(Option option, UUID baseElementId) {
         return baseElementRepository.findByBaseIdAndOptionId(baseElementId, option.getOptionId())
                 .orElseThrow(() -> {
