@@ -16,6 +16,9 @@ public interface BaseElementRepository extends JpaRepository<BaseElement, UUID> 
     @Query("SELECT t FROM BaseElement t WHERE t.option.optionId = :optionId")
     List<BaseElement> findByOptionId(@Param("optionId") UUID optionId);
 
+    @Query("SELECT COUNT(t) FROM BaseElement t WHERE t.option.optionId = :optionId")
+    int countByOptionId(@Param("optionId") UUID optionId);
+
     @Query("SELECT t FROM BaseElement t WHERE t.baseElementId = :baseElementId AND t.option.optionId = :optionId")
     Optional<BaseElement> findByBaseIdAndOptionId(@Param("baseElementId") UUID baseElementId, @Param("optionId") UUID optionId);
 }
